@@ -9,3 +9,4 @@ __pycache__/
 # Django stuff:
 *.log
 *.pot
+*.pyc
