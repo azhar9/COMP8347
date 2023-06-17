@@ -24,10 +24,15 @@ class Role(models.Model):
         return f"RoleName: {self.name}"
 
 
+'''
+superuser - username - admin, password - 1234
+'''
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    membership = models.ForeignKey(Membership, on_delete=models.SET_NULL, default=3)
+    membership = models.ForeignKey(Membership, on_delete=models.SET_NULL, null=True, default=3)
 
     def __str__(self):
         return f"Username: {self.user.username}, Role: {self.role.name}, Membership: {self.membership.name}"
@@ -54,7 +59,7 @@ class Course(models.Model):
     description = models.TextField()
     instructor = models.ForeignKey(User, on_delete=models.CASCADE)
     published = models.BooleanField(default=False)
-    membership_level_required = models.ForeignKey(Membership, on_delete=models.SET_NULL, default=3)
+    membership_level_required = models.ForeignKey(Membership, on_delete=models.SET_NULL, null=True, default=3)
 
     def __str__(self):
         return f"CourseName: {self.name}, Published: {self.published}, Instructor: {self.instructor.username}, " \

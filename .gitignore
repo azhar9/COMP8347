@@ -1,2 +1,11 @@
 venv/
 .idea/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+**/__pycache__/
+
+# Django stuff:
+*.log
+*.pot
