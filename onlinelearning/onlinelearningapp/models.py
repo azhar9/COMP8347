@@ -2,13 +2,21 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
+class TimestampedModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
 # TODO: PREREQ-- While creating data for Membership create in the order of MEMBERSHIP_TYPES make sure the id matches
 #     MEMBERSHIP_TYPES = (
 #         (1, 'gold', '3', 'CAD'),
 #         (2, 'silver','1', 'CAD'),
 #         (3, 'bronze','0', 'CAD'),
 #     )
-class Membership(models.Model):
+class Membership(TimestampedModel):
     name = models.CharField(max_length=30)
     price = models.DecimalField(max_digits=5, decimal_places=2)
     currency = models.CharField(max_length=3)
@@ -17,7 +25,7 @@ class Membership(models.Model):
         return f"Name: {self.name}, Price: {self.price}, Currency: {self.currency}"
 
 
-class Role(models.Model):
+class Role(TimestampedModel):
     name = models.CharField(max_length=30)
 
     def __str__(self):
@@ -29,7 +37,7 @@ superuser - username - admin, password - 1234
 '''
 
 
-class UserProfile(models.Model):
+class UserProfile(TimestampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     membership = models.ForeignKey(Membership, on_delete=models.SET_NULL, null=True, default=3)
@@ -54,7 +62,7 @@ ccid3 sid1 link order3 type
 '''
 
 
-class Course(models.Model):
+class Course(TimestampedModel):
     name = models.CharField(max_length=100)
     description = models.TextField()
     instructor = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -66,7 +74,7 @@ class Course(models.Model):
                f"Membership Level Required: {self.membership_level_required.name}"
 
 
-class Section(models.Model):
+class Section(TimestampedModel):
     name = models.CharField(max_length=100)
     description = models.TextField()
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -79,7 +87,7 @@ class Section(models.Model):
         return f"SectionName: {self.name}, Course: {self.course.name}, Order: {self.order}"
 
 
-class CourseContent(models.Model):
+class CourseContent(TimestampedModel):
     CONTENT_TYPES = (
         ('pdf', 'PDF'),
         ('video', 'VIDEO'),
@@ -103,7 +111,7 @@ class CourseContent(models.Model):
                f"Order: {self.order}, Filepath: {self.filepath}, Content Type:{self.content_type}"
 
 
-class Enrollment(models.Model):
+class Enrollment(TimestampedModel):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     date_enrolled = models.DateTimeField(auto_now_add=True)
@@ -112,7 +120,7 @@ class Enrollment(models.Model):
         return f'Student: {self.student.username}, Course: {self.course.name}'
 
 
-class CourseProgress(models.Model):
+class CourseProgress(TimestampedModel):
     enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
     course_content = models.ForeignKey(CourseContent, on_delete=models.CASCADE)
     status = models.BooleanField()
@@ -122,7 +130,7 @@ class CourseProgress(models.Model):
                f' Content: {self.course_content.name}, Status:{self.status}'
 
 
-class Attendance(models.Model):
+class Attendance(TimestampedModel):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     date = models.DateField()
@@ -131,7 +139,7 @@ class Attendance(models.Model):
         return f'Student: {self.student.username}, Course: {self.course.name}, Date: {self.date}'
 
 
-class Certificate(models.Model):
+class Certificate(TimestampedModel):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     issue_date = models.DateTimeField(auto_now_add=True)
@@ -141,7 +149,7 @@ class Certificate(models.Model):
         return f'Student: {self.student.username}, Course: {self.course.name},Filepath:{self.filepath}'
 
 
-class Payment(models.Model):
+class Payment(TimestampedModel):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     membership = models.ForeignKey(Membership, on_delete=models.CASCADE, null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
