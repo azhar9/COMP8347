@@ -1,6 +1,9 @@
 from django.contrib.auth import authenticate, login
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
+from django.contrib.auth.views import PasswordResetView
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 
 from .models import Role, UserProfile
 
@@ -40,6 +43,22 @@ def login_view(request):
             return render(request, 'login.html', {'error_message': error_message})
     else:
         return render(request, 'login.html')
+
+
+def forgot_password(request):
+    if request.method == 'POST':
+        # Pass the request to Django's PasswordResetView
+        return auth_views.PasswordResetView.as_view(
+            template_name='forgot_password.html',
+            email_template_name='password_reset_email.html',
+            success_url=reverse_lazy('password_reset_done')
+        )(request)
+    else:
+        return render(request, 'forgot_password.html')
+
+
+def index(request):
+    return render(request, 'login.html')
 
 
 def home(request):
