@@ -21,3 +21,7 @@ def register(request):
         return redirect('home')  # Redirect to the home page after successful registration
 
     return render(request, 'register.html')
+
+
+def home(request):
+    return render(request, 'home.html')
