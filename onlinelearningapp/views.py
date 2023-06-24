@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
@@ -46,18 +47,25 @@ def login_view(request):
 
 def forgot_password(request):
     if request.method == 'POST':
-        # Pass the request to Django's PasswordResetView
-        return auth_views.PasswordResetView.as_view(
-            template_name='forgot_password.html',
-            email_template_name='password_reset_email.html',
-            success_url=reverse_lazy('password_reset_done')
-        )(request)
+        email = request.POST['email']
+
+        # Check if the email exists in the User model
+        if User.objects.filter(email=email).exists():
+            # Pass the request to Django's PasswordResetView
+            return auth_views.PasswordResetView.as_view(
+                template_name='forgot_password.html',
+                email_template_name='password_reset_email.html',
+                success_url=reverse_lazy('password_reset_done')
+            )(request)
+        else:
+            messages.error(request, 'No user with that email address exists.')
+            return redirect('forgot_password')
     else:
         return render(request, 'forgot_password.html')
 
 
 def index(request):
-    return render(request, 'login.html')
+    return redirect('login_view')
 
 
 def home(request):
