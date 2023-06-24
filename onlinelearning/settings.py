@@ -125,11 +125,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # SMTP email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_CONTENT_TYPE = 'text/html'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'ailabs.cult@gmail.com'  # Your Gmail email address
-EMAIL_HOST_PASSWORD = ''  # Your Gmail password
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'ailabs.cult@gmail.com'  # The email address to use as the sender
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_CONTENT_TYPE = 'text/html'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'ailabs.cult@gmail.com'  # Your Gmail email address
+# EMAIL_HOST_PASSWORD = 'vazzbhfadbhiqmbm'  # Your Gmail password
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'ailabs.cult@gmail.com'  # The email address to use as the sender
