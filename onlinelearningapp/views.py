@@ -1,9 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from .models import Role, UserProfile
 
@@ -51,12 +55,30 @@ def forgot_password(request):
 
         # Check if the email exists in the User model
         if User.objects.filter(email=email).exists():
-            # Pass the request to Django's PasswordResetView
-            return auth_views.PasswordResetView.as_view(
-                template_name='forgot_password.html',
-                email_template_name='password_reset_email.html',
-                success_url=reverse_lazy('password_reset_done')
-            )(request)
+            user = User.objects.get(email=email)
+
+            # Generate the password reset token and URL
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            current_site = get_current_site(request)
+            reset_url = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+            reset_url = f"{request.scheme}://{current_site}{reset_url}"
+            print("reset_url", reset_url)
+
+            # Render the email template with the reset URL
+            email_subject = 'Password reset on 127.0.0.1:8000'
+            email_message = render_to_string('password_reset_email.html', {
+                'user': user,
+                'password_reset_url': reset_url,
+            })
+
+            # Send the email using your preferred email sending method
+            # For example, using Django's EmailMessage class:
+            from django.core.mail import EmailMessage
+            email = EmailMessage(email_subject, email_message, to=[user.email])
+            email.send()
+
+            return redirect('password_reset_done')
         else:
             messages.error(request, 'No user with that email address exists.')
             return redirect('forgot_password')
