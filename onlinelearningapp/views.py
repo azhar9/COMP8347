@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_encode
 from .models import Role, UserProfile
 
 
+# TODO: use class based views
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']
