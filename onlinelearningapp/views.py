@@ -92,5 +92,5 @@ def index(request):
 
 def home(request):
     if not request.user.is_authenticated:
-        return redirect('login')
+        return redirect('login_view')
     return render(request, 'home.html')
