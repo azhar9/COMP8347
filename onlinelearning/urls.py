@@ -18,13 +18,13 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from onlinelearningapp.views import register, home, login_view, forgot_password, index
+from onlinelearningapp.views import register, HomeView, login_view, forgot_password, index, CourseView, CourseDetailView
 
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
     path('register/', register, name='register'),
-    path('home/', home, name='home'),
+    path('home/', HomeView.as_view(), name='home'),
     path('login/', login_view, name='login_view'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login_view'), name='logout'),
     path('forgot-password/', forgot_password, name='forgot_password'),
@@ -36,4 +36,6 @@ urlpatterns = [
     path('password-reset-complete/',
          auth_views.PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),
          name='password_reset_complete'),
+    path('create-course/', CourseView.as_view(), name='create_course'),
+    path('courses/<courseid>', CourseDetailView.as_view(), name='course_detail'),
 ]

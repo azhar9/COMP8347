@@ -3,13 +3,14 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.views import View
 
-from .models import Role, UserProfile
+from .models import Role, UserProfile, Course, Membership
 
 
 # TODO: use class based views
@@ -91,7 +92,58 @@ def index(request):
     return redirect('login_view')
 
 
-def home(request):
-    if not request.user.is_authenticated:
-        return redirect('login_view')
-    return render(request, 'home.html')
+# TODO: create different home page templates for both students and teacher
+class HomeView(View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return redirect('login_view')
+        
+        user_profile = UserProfile.objects.get(user=request.user)
+
+        if user_profile.role.name == "teacher":
+            #teacher home page
+            course_list = Course.objects.all()
+            context = {'course_list': course_list}
+            print(course_list)
+            return render(request, 'home_teacher.html', context)
+
+        return render(request, 'home_student.html')
+
+
+class CourseView(View):
+    template_name = 'course_builder.html'
+    def get(self, request):
+        course_list = Course.objects.filter(instructor_id=request.user.id)
+        context = {'course_list': course_list}
+        return render(request, self.template_name, context)
+
+    def post(self, request):
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        membership = request.POST.get('membership_level_required')
+        description = request.POST.get('description')
+        instructor_id = request.user.id
+
+        instructor = User.objects.get(id=instructor_id)
+        membership_level_required = Membership.objects.get(name=membership)
+
+        # Create the course and associate it with the instructor
+        course = Course.objects.create(
+            name=name,
+            description=description,
+            membership_level_required=membership_level_required,
+            instructor=instructor,
+        )
+
+        return redirect('home')
+
+class CourseDetailView(View):
+    def get(self, request, courseid):
+        #TODO: get an object here with section and their respective content
+        print(courseid)
+        course = get_object_or_404(Course, id=courseid)
+
+        context = {
+            'course': course,
+        }
+        return render(request, 'course_detail.html', context)

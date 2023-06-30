@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Home</title>
+</head>
+<body>
+    <h2>Welcome to the Home Page</h2>
+
+    <ul>
+        {% for course in course_list %}
+            <li>
+                <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Redirect to Course Builder -->
+    <a href="{% url 'create_course' %}">
+        <button>Create Course</button>
+    </a>
+
+    <!-- Logout Button -->
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Logout">
+    </form>
+</body>
+</html>
