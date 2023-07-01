@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from onlinelearningapp.views import register, HomeView, login_view, forgot_password, index, CourseView, CourseDetailView
+from onlinelearningapp.views import register, HomeView, login_view, forgot_password, index, CourseView, CourseDetailView, SectionView, AddSectionView, AddContentView
 
 urlpatterns = [
     path('', index, name='index'),
@@ -38,4 +38,8 @@ urlpatterns = [
          name='password_reset_complete'),
     path('create-course/', CourseView.as_view(), name='create_course'),
     path('courses/<courseid>', CourseDetailView.as_view(), name='course_detail'),
+    path('courses/<int:courseid>/add-section/', AddSectionView.as_view(), name='add_section'),
+    path('courses/<int:courseid>/<int:sectionid>/', SectionView.as_view(), name='section_detail'),
+    path('courses/<int:courseid>/<int:sectionid>/add-content/', AddContentView.as_view(), name='add_content'),
+    path('courses/<int:courseid>/<int:sectionid>/<int:coursecontentid>', AddContentView.as_view(), name='add_content'),
 ]

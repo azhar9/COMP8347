@@ -10,7 +10,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.views import View
 
-from .models import Role, UserProfile, Course, Membership
+from .models import Role, UserProfile, Course, Membership, Section, CourseContent
 
 
 # TODO: use class based views
@@ -137,13 +137,102 @@ class CourseView(View):
 
         return redirect('home')
 
+
 class CourseDetailView(View):
     def get(self, request, courseid):
         #TODO: get an object here with section and their respective content
         print(courseid)
         course = get_object_or_404(Course, id=courseid)
+        sections = Section.objects.filter(course=course)
+        context = {
+            'course': course,
+            'sections': sections
+        }
+        print(context)
+        return render(request, 'course_detail.html', context)
 
+
+class AddSectionView(View):
+    def get(self, request, courseid):
+        course = get_object_or_404(Course, id=courseid)
         context = {
             'course': course,
         }
-        return render(request, 'course_detail.html', context)
+        return render(request, 'add_section.html', context)
+
+    def post(self, request, courseid):
+        course = get_object_or_404(Course, id=courseid)
+        order = Section.objects.filter(course=course).count()
+
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+
+        print(Course, name, description, order)
+
+        section = Section.objects.create(
+            name=name,
+            description=description,
+            order=order+1,
+            course=course
+        )
+
+        return redirect('course_detail', courseid=courseid)
+
+
+class SectionView(View):
+    def get(self, request, courseid, sectionid):
+        print('hi', courseid, sectionid)
+        course = get_object_or_404(Course, id=courseid)
+        section = get_object_or_404(Section, id=sectionid)
+        contents = CourseContent.objects.filter(section=section)
+        context = {
+            'section': section,
+            'course': course,
+            'contents': contents
+        }
+        return render(request, 'section_detail.html', context)
+    
+
+class CourseContentView(View):
+    def get(self, request, courseid, sectionid, coursecontentid):
+        section = get_object_or_404(Section, id=sectionid)
+        course = get_object_or_404(Course, id=courseid)
+        coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
+        context = {
+            'section': section,
+            'course': course,
+            'coursecontent': coursecontent
+        }
+        return render(request, 'section_detail.html', context)
+    
+
+
+class AddContentView(View):
+    def get(self, request, courseid, sectionid):
+        section = get_object_or_404(Section, id=sectionid)
+        course = get_object_or_404(Course, id=courseid)
+        context = {
+            'section': section,
+            'course': course,
+        }
+        return render(request, 'add_content.html', context)
+
+    def post(self, request, courseid, sectionid):
+        section = get_object_or_404(Section, id=sectionid)
+        order = CourseContent.objects.filter(section=section).count()
+
+        name = request.POST.get('name')
+        content_file = request.FILES.get('file')
+        content_type = request.POST.get('content_type')
+        print("in post method", name, content_type, content_file, request.FILES)
+        
+        # Create the course content object
+        course_content = CourseContent.objects.create(
+            section=section,
+            name=name,
+            order=order+1,  # Set the filepath field
+            filepath=content_file,
+            content_type=content_type,
+        )
+
+        return redirect('section_detail', courseid=courseid, sectionid=sectionid)
