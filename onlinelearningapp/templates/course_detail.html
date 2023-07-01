@@ -4,8 +4,25 @@
         <title>Course Detail</title>
     </head>
     <body>
-        <h2>Welcome to Course Detail Page</h2>
-        <p> {{ course }}</p>
+        <h1>
+            <a href="{% url 'home'%}">Courses</a> >
+            {{ course.name }}
+        </h1>
+        <div> <strong>Course Overview: </strong> {{ course.description }}</div>
+        <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>
+        
+        <!-- Section List -->
+        <h2>Course Sections:</h2>
+        {% for section in sections %}
+            <div>
+                <a href="{% url 'section_detail' courseid=course.id sectionid=section.id %}">{{ section.name }}</a>
+            </div>
+        {% empty %}
+            <p>No contents found</p>
+        {% endfor %}
+
+        <a href="{% url 'add_section' courseid=course.id %}"><button>Add Section</button></a>
+
         <div>
             {% if user_profile.role.name == 'student' %}
                 <div>

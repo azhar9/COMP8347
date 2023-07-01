@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Course Detail</title>
+</head>
+<body>
+    <h1>
+        <a href="{% url 'home'%}">Courses</a> >
+        <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a> >
+        {{ section.name }}
+    </h1>
+    
+    <h2></h2>
+    <p><strong>Section Name:</strong> {{ section.name }}</p>
+    <p><strong>Description:</strong> {{ section.description }}</p>
+
+    <h2>Section Contents</h2>
+    {% if contents %}
+        <ul>
+            {% for content in contents %}
+                <li>{{ content.name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No contents found</p>
+    {% endif %}
+    
+    <a href="{% url 'add_content' courseid=course.id sectionid=section.id %}"><button>Add Content</button></a>
+</body>
+</html>
