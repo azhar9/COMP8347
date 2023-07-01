@@ -10,7 +10,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.views import View
 
-from .models import Role, UserProfile, Course, Membership
+from .models import Role, UserProfile, Course, Membership, Enrollment
 
 
 # TODO: use class based views
@@ -91,6 +91,18 @@ def forgot_password(request):
 def index(request):
     return redirect('login_view')
 
+def enrollCourse(request):
+    course_id = request.GET['courseId']
+
+    course_enrollment = Enrollment()
+    course_enrollment.course_id = course_id
+    course_enrollment.student_id = request.user.id
+    course_enrollment.save()
+
+    return redirect('home')
+
+
+
 
 # TODO: create different home page templates for both students and teacher
 class HomeView(View):
@@ -99,15 +111,37 @@ class HomeView(View):
             return redirect('login_view')
         
         user_profile = UserProfile.objects.get(user=request.user)
-
+        course_list = Course.objects.all()
         if user_profile.role.name == "teacher":
             #teacher home page
-            course_list = Course.objects.all()
             context = {'course_list': course_list}
             print(course_list)
             return render(request, 'home_teacher.html', context)
+        else:
+            enrollments = Enrollment.objects.filter(student_id=request.user.id)
+            bronze_courses = []
+            silver_courses = []
+            gold_courses = []
+            for course in course_list:
+                if course.membership_level_required.name == "bronze":
+                    bronze_courses.append(course)
+                if course.membership_level_required.name == "silver":
+                    silver_courses.append(course)
+                if course.membership_level_required.name == "gold":
+                    gold_courses.append(course)
+            context = {'student_name': user_profile.user.username,
+                       'bronze_courses': bronze_courses,
+                       'silver_courses': silver_courses,
+                       'gold_courses': gold_courses,
+                       'enrollments': enrollments}
+            return render(request, 'home_student.html', context)
 
-        return render(request, 'home_student.html')
+
+class ProfileView(View):
+    def get(self, request):
+        user_profile = UserProfile.objects.get(user=request.user)
+        context = {'user_profile': user_profile}
+        return render(request, 'profile.html', context)
 
 
 class CourseView(View):
@@ -137,13 +171,15 @@ class CourseView(View):
 
         return redirect('home')
 
+
 class CourseDetailView(View):
     def get(self, request, courseid):
         #TODO: get an object here with section and their respective content
         print(courseid)
         course = get_object_or_404(Course, id=courseid)
-
+        user_profile = UserProfile.objects.get(user_id=request.user.id)
         context = {
             'course': course,
+            'user_profile': user_profile
         }
         return render(request, 'course_detail.html', context)

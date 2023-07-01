@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        p.capitalize, h1.capitalize {
+        text-transform: uppercase;
+    }
+    </style>
+    <title>User Profile</title>
+</head>
+<body>
+    <ul>
+            <h1 class="capitalize">Welcome to your profile : {{ user_profile.user.username }}</h1>
+                <p class="capitalize">User Name: {{ user_profile.user.username }}</p>
+                <p class="capitalize">{{ user_profile.role }}</p>
+                <p class="capitalize">Membership Details : {{ user_profile.membership }}</p>
+    </ul>
+
+    <input type="button" value="Homepage" onclick="location.href='/home'">
+
+</body>
+</html>

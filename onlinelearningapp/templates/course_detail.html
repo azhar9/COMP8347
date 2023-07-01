@@ -6,5 +6,13 @@
     <body>
         <h2>Welcome to Course Detail Page</h2>
         <p> {{ course }}</p>
+        <div>
+            {% if user_profile.role.name == 'student' %}
+                <div>
+                    <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"/>
+                    <input type="button" onclick="" value="Drop"/>
+                </div>
+            {%  endif %}
+        </div>
     </body>
 </html>
