@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Course Navigator</title>
+</head>
+<body>
+<div class="course-navigation">
+    <!-- navigation.html -->
+
+<ul>
+  {% for section in sections %}
+    <li>
+      <a href="#section{{ section.id }}">{{ section.name }}</a>
+    </li>
+  {% endfor %}
+</ul>
+
+
+</div>
+</body>
+</html>

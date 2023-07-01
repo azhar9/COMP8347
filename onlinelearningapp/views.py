@@ -97,11 +97,11 @@ class HomeView(View):
     def get(self, request):
         if not request.user.is_authenticated:
             return redirect('login_view')
-        
+
         user_profile = UserProfile.objects.get(user=request.user)
 
         if user_profile.role.name == "teacher":
-            #teacher home page
+            # teacher home page
             course_list = Course.objects.all()
             context = {'course_list': course_list}
             print(course_list)
@@ -112,6 +112,7 @@ class HomeView(View):
 
 class CourseView(View):
     template_name = 'course_builder.html'
+
     def get(self, request):
         course_list = Course.objects.filter(instructor_id=request.user.id)
         context = {'course_list': course_list}
@@ -140,7 +141,7 @@ class CourseView(View):
 
 class CourseDetailView(View):
     def get(self, request, courseid):
-        #TODO: get an object here with section and their respective content
+        # TODO: get an object here with section and their respective content
         print(courseid)
         course = get_object_or_404(Course, id=courseid)
         sections = Section.objects.filter(course=course)
@@ -172,7 +173,7 @@ class AddSectionView(View):
         section = Section.objects.create(
             name=name,
             description=description,
-            order=order+1,
+            order=order + 1,
             course=course
         )
 
@@ -191,7 +192,7 @@ class SectionView(View):
             'contents': contents
         }
         return render(request, 'section_detail.html', context)
-    
+
 
 class CourseContentView(View):
     def get(self, request, courseid, sectionid, coursecontentid):
@@ -204,7 +205,6 @@ class CourseContentView(View):
             'coursecontent': coursecontent
         }
         return render(request, 'section_detail.html', context)
-    
 
 
 class AddContentView(View):
@@ -225,14 +225,26 @@ class AddContentView(View):
         content_file = request.FILES.get('file')
         content_type = request.POST.get('content_type')
         print("in post method", name, content_type, content_file, request.FILES)
-        
+
         # Create the course content object
         course_content = CourseContent.objects.create(
             section=section,
             name=name,
-            order=order+1,  # Set the filepath field
+            order=order + 1,  # Set the filepath field
             filepath=content_file,
             content_type=content_type,
         )
 
         return redirect('section_detail', courseid=courseid, sectionid=sectionid)
+
+
+class CourseDetailView(View):
+    def get(self, request, course_id):
+        course = get_object_or_404(Course, id=course_id)
+        sections = course.section_set.all().order_by('order')
+
+        # Get all the course contents related to the sections
+        section_ids = sections.values_list('id', flat=True)
+        contents = CourseContent.objects.filter(section__id__in=section_ids).order_by('order')
+
+        return render(request, 'course_navigation.html', {'course': course, 'sections': sections, 'contents': contents})

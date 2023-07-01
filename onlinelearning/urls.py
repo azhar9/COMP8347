@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from onlinelearningapp.views import register, HomeView, login_view, forgot_password, index, CourseView, CourseDetailView, SectionView, AddSectionView, AddContentView
+from onlinelearningapp.views import register, HomeView, login_view, forgot_password, index, CourseView, \
+    CourseDetailView, SectionView, AddSectionView, AddContentView
 
 urlpatterns = [
     path('', index, name='index'),
@@ -42,4 +43,5 @@ urlpatterns = [
     path('courses/<int:courseid>/<int:sectionid>/', SectionView.as_view(), name='section_detail'),
     path('courses/<int:courseid>/<int:sectionid>/add-content/', AddContentView.as_view(), name='add_content'),
     path('courses/<int:courseid>/<int:sectionid>/<int:coursecontentid>', AddContentView.as_view(), name='add_content'),
+    path('course_navigation/<int:course_id>', CourseDetailView.as_view(), name='course_navigation'),
 ]
