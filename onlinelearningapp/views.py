@@ -174,10 +174,10 @@ class CourseView(View):
 
 
 class CourseDetailView(View):
-    def get(self, request, course_id):
+    def get(self, request, courseid):
         # TODO: get an object here with section and their respective content
-        print(course_id)
-        course = get_object_or_404(Course, id=course_id)
+        # print(courseid)
+        course = get_object_or_404(Course, id=courseid)
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
 
@@ -189,6 +189,13 @@ class CourseDetailView(View):
         }
         print(context)
         return render(request, 'course_detail.html', context)
+    
+    def post(self, request, courseid):
+        course = get_object_or_404(Course, id=courseid)
+        course.published = True
+        course.save()
+        return redirect('course_detail', courseid=courseid)
+
 
 
 class AddSectionView(View):
