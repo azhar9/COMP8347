@@ -278,7 +278,7 @@ class AddContentView(View):
         return redirect('section_detail', courseid=courseid, sectionid=sectionid)
 
 
-class CourseDetailView(View):
+class CourseNavigationView(View):
     def get(self, request, course_id):
         course = get_object_or_404(Course, id=course_id)
         sections = course.section_set.all().order_by('order')
