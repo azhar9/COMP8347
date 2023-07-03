@@ -1,28 +1,35 @@
+{% load django_bootstrap5 %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Register</title>
+    {% bootstrap_css %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
-<body>
-    <form method="post">
-      {% csrf_token %}
-      <label for="username">Username:</label>
-      <input type="text" id="username" name="username"><br>
+<body class="w-100 d-flex flex-column justify-content-center align-items-center bb">
+<img src="{% static 'images/Eduhub-4 2.png' %}" class="register-logo">
+<div class="w-50 p-5 register-form-container shadow">
+    <form method="post" class="m-3 d-flex flex-column align-items-center">
+        {% csrf_token %}
+        <input type="text" id="username" name="username" class="form-control form-control-lg shadow"
+               placeholder="username"><br>
 
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email"><br>
+        <input type="email" id="email" name="email" class="form-control form-control-lg shadow" placeholder="email"><br>
 
-      <label for="password">Password:</label>
-      <input type="password" id="password" name="password"><br>
+        <input type="password" id="password" name="password" class="form-control form-control-lg shadow"
+               placeholder="password"><br>
 
-      <label for="role">Role:</label>
-      <select id="role" name="role">
-        <option value="student">Student</option>
-        <option value="teacher">Teacher</option>
-      </select><br>
+        <select id="role" name="role" class="form-select form-control-lg shadow">
+            <option value="student">Student</option>
+            <option value="teacher">Teacher</option>
+        </select><br>
 
-      <input type="submit" value="Register">
+        <input type="submit" value="Sign up" class="btn rounded-pill px-5 py-2 btn-color mt-2 fs-5">
     </form>
+    <a class="fs-5" href="{% url 'login_view' %}">Already have an account?</a>
+</div>
+{% bootstrap_javascript %}
 </body>
 </html>
