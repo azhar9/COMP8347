@@ -1,0 +1,26 @@
+
+<form method="POST" action="{% url 'create_course' %}">
+    {% csrf_token %}
+    
+    <!-- Title field -->
+    <label for="name">Course Name:</label>
+    <input type="text" id="name" name="name" required><br><br>
+    
+    <!-- Description field -->
+    <label for="description">Description:</label><br>
+    <textarea id="description" name="description" rows="4" cols="50" required></textarea><br><br>
+    
+    <!-- Membership level selector -->
+    <label for="membership_level_required">Membership Level Required:</label>
+    <select id="membership_level_required" name="membership_level_required" required>
+      <option value="bronze">bronze</option>
+      <option value="silver">silver</option>
+      <option value="gold">gold</option>
+    </select><br><br>
+    
+    <!-- User ID as a hidden field -->
+    <input type="hidden" name="user_id" value="{{ user_id }}">
+
+    <!-- Submit button -->
+    <input type="submit" value="Create Course">
+  </form>

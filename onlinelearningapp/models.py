@@ -29,7 +29,7 @@ class Role(TimestampedModel):
     name = models.CharField(max_length=30)
 
     def __str__(self):
-        return f"RoleName: {self.name}"
+        return f"Role Name: {self.name}"
 
 
 '''
@@ -82,6 +82,7 @@ class Section(TimestampedModel):
 
     class Meta:
         unique_together = ('course', 'order',)
+        ordering = ['order']
 
     def __str__(self):
         return f"SectionName: {self.name}, Course: {self.course.name}, Order: {self.order}"
@@ -105,6 +106,7 @@ class CourseContent(TimestampedModel):
 
     class Meta:
         unique_together = ('section', 'order',)
+        ordering = ['order']
 
     def __str__(self):
         return f"ContentName: {self.name}, Course: {self.section.course.name}, Section: {self.section.name}, " \

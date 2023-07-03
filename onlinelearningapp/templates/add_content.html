@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Course Content</title>
+</head>
+<body>
+    <h1>
+        <a href="{% url 'home'%}">Courses</a> >
+        <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a> >
+        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=role %}" >{{ section.name }}</a> >
+        New Content
+    </h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="role" value="{{ role }}"/>
+        <div>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div>
+            <label for="content_type">Content Type:</label>
+            <select id="content_type" name="content_type" onchange="updateFileAccept()" required>
+                <option value="">Select Content Type</option>
+                <option value="pdf">Pdf</option>
+            </select>
+        </div>
+        <div id="fileInputDiv" style="display:none">
+            <label for="file">File:</label>
+            <input type="file" id="file" name="file">
+        </div>
+        <input type="submit" value="Save">
+    </form>
+</body>
+<script>
+    function updateFileAccept() {
+      var contentSelect = document.getElementById('content_type');
+      var fileInput = document.getElementById('file');
+      var fileInputDiv = document.getElementById('fileInputDiv');
+  
+      // Get the selected option
+      var selectedOption = contentSelect.options[contentSelect.selectedIndex].value;
+  
+      // Update the accept attribute based on the selected option
+      if (selectedOption === 'pdf') {
+        fileInput.accept = '.pdf';
+        fileInputDiv.style.display = 'block';
+      } else {
+        fileInputDiv.style.display = 'none';
+      }
+    }
+  </script>
+</html>

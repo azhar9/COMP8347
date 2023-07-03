@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        td.capitalize, div.capitalize {
+        text-transform: uppercase;
+    }
+        table, th, td {
+        border:1px solid black;
+    }
+    </style>
+    <title>Student Home</title>
+</head>
+<body>
+    <h2>Welcome to the Student Home Page</h2>
+    <div>
+        <img src="img_chania.jpg" alt="Test icon" width="49" height="30">
+    </div>
+    <div class="bg-light-blue, capitalize">
+        <i class="fa-solid fa-graduation-cap"></i>
+        {{ student_name }}
+    </div>
+
+    <!-- Logout Button -->
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Logout">
+    </form>
+    <div>
+    <input type="button" value="Profile" onclick="location.href='/profile'">
+    </div>
+    <div>
+        <h2>Your Courses</h2>
+        <table style="width:100%">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Instructor</th>
+                <th>Status(% completed)</th>
+                <th>Certificate</th>
+            </tr>
+            {% for enrollment in enrollments %}
+            <tr>
+                <td>{{ enrollment.course.id }}</td>
+                <td>{{ enrollment.course.name }}</td>
+                <td>{{ enrollment.course.instructor }}</td>
+                <td>0</td>
+                <td>-</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div>
+        <h2>Bronze Courses</h2>
+        <table style="width:100%">
+            <tr>
+                <th>Membership</th>
+                <th>Id</th>
+                <th>Name</th>
+            </tr>
+             {% for course in bronze_courses %}
+            <tr>
+                <td class = "capitalize">{{ course.membership_level_required.name }}</td>
+                <td>{{ course.id }}</td>
+
+                <td><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <div>
+        <h2>Silver Courses</h2>
+        <table style="width:100%">
+            <tr>
+                <th>Membership</th>
+                <th>Id</th>
+                <th>Name</th>
+            </tr>
+             {% for course in silver_courses %}
+            <tr>
+                <td class = "capitalize">{{ course.membership_level_required.name }}</td>
+                <td>{{ course.id }}</td>
+                <td><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+    <div>
+        <h2>Gold Courses</h2>
+        <table style="width:100%">
+            <tr>
+                <th>Membership</th>
+                <th>Id</th>
+                <th>Name</th>
+            </tr>
+             {% for course in gold_courses %}
+            <tr>
+                <td class = "capitalize">{{ course.membership_level_required.name }}</td>
+                <td>{{ course.id }}</td>
+                <td><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

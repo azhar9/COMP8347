@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Course Detail</title>
+    </head>
+    <body>
+        <h1>
+            <a href="{% url 'home'%}">Courses</a> >
+            {{ course.name }}
+        </h1>
+        <div>
+            {% if user_profile.role.name == 'student' %}
+                <div>
+                    <div> <strong>Course Overview: </strong> {{ course.description }}</div>
+                    <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>
+                    <h2>Course Sections:</h2>
+                    {% for section in sections %}
+                    <div>
+                        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{ section.name }}</a>
+                    </div>
+                    {% empty %}
+                        <p>No contents found</p>
+                    {% endfor %}
+                    <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"/>
+                    <input type="button" onclick="location.href='/dropCourse.do?courseId={{ course.id }}'" value="Drop"/>
+                </div>
+            {% else %}
+                <form method="post">
+                    {% csrf_token %}
+                    {% if course.published == False %}
+                        <input type="submit" name="publish" value="Publish">
+                    {% endif %}
+                </form>
+                <div> <strong>Course Overview: </strong> {{ course.description }}</div>
+                <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>
+                <div><strong>Published:</strong> {{ course.published }}</div>
+                <h2>Course Sections:</h2>
+                     {% for section in sections %}
+                        <div>
+                            <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{ section.name }}</a>
+                        </div>
+                     {% empty %}
+                         <p>No contents found</p>
+                    {% endfor %}
+
+                 <a href="{% url 'add_section' courseid=course.id %}"><button>Add Section</button></a>
+                    {%  endif %}
+                 </div>
+    </body>
+</html>
