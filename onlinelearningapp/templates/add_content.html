@@ -7,11 +7,12 @@
     <h1>
         <a href="{% url 'home'%}">Courses</a> >
         <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a> >
-        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id %}" >{{ section.name }}</a> >
+        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=role %}" >{{ section.name }}</a> >
         New Content
     </h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        <input type="hidden" name="role" value="{{ role }}"/>
         <div>
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>

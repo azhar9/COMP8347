@@ -24,7 +24,8 @@
     {% else %}
         <p>No contents found</p>
     {% endif %}
-    
+    {%  if role == 'teacher' %}
     <a href="{% url 'add_content' courseid=course.id sectionid=section.id %}"><button>Add Content</button></a>
+    {% endif %}
 </body>
 </html>

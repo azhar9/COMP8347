@@ -101,6 +101,14 @@ def enrollCourse(request):
     return redirect('home')
 
 
+def dropCourse(request):
+    course_id = request.GET.get('courseId')
+    student_id = request.user.id
+
+    course_enrollment = Enrollment.objects.filter(course_id=course_id, student_id=student_id)
+    course_enrollment.delete()
+
+    return redirect('home')
 
 
 # TODO: create different home page templates for both students and teacher
@@ -228,7 +236,7 @@ class AddSectionView(View):
 
 
 class SectionView(View):
-    def get(self, request, courseid, sectionid):
+    def get(self, request, courseid, sectionid, role):
         print('hi', courseid, sectionid)
         course = get_object_or_404(Course, id=courseid)
         section = get_object_or_404(Section, id=sectionid)
@@ -236,7 +244,8 @@ class SectionView(View):
         context = {
             'section': section,
             'course': course,
-            'contents': contents
+            'contents': contents,
+            'role': role
         }
         return render(request, 'section_detail.html', context)
 
@@ -261,6 +270,7 @@ class AddContentView(View):
         context = {
             'section': section,
             'course': course,
+            'role': 'teacher'
         }
         return render(request, 'add_content.html', context)
 
@@ -271,6 +281,7 @@ class AddContentView(View):
         name = request.POST.get('name')
         content_file = request.FILES.get('file')
         content_type = request.POST.get('content_type')
+        role = request.POST.get('role')
         print("in post method", name, content_type, content_file, request.FILES)
 
         # Create the course content object
@@ -282,7 +293,7 @@ class AddContentView(View):
             content_type=content_type,
         )
 
-        return redirect('section_detail', courseid=courseid, sectionid=sectionid)
+        return redirect('section_detail', courseid=courseid, sectionid=sectionid, role=role)
 
 
 class CourseNavigationView(View):
