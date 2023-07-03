@@ -98,6 +98,7 @@ def enrollCourse(request):
     course_enrollment.student_id = request.user.id
     course_enrollment.save()
 
+
     return redirect('home')
 
 
@@ -188,12 +189,16 @@ class CourseDetailView(View):
         course = get_object_or_404(Course, id=courseid)
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
-
+        try:
+            enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
+        except Enrollment.DoesNotExist:
+            enrollments = None
         sections = Section.objects.filter(course=course)
         context = {
             'course': course,
             'sections': sections,
-            'user_profile': user_profile
+            'user_profile': user_profile,
+            'enrollments': enrollments
         }
         print(context)
         return render(request, 'course_detail.html', context)

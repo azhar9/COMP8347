@@ -21,8 +21,11 @@
                     {% empty %}
                         <p>No contents found</p>
                     {% endfor %}
-                    <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"/>
+                    {% if enrollments %}
                     <input type="button" onclick="location.href='/dropCourse.do?courseId={{ course.id }}'" value="Drop"/>
+                    {% else %}
+                    <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"/>
+            {% endif %}
                 </div>
             {% else %}
                 <form method="post">

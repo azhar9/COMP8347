@@ -42,7 +42,7 @@
             {% for enrollment in enrollments %}
             <tr>
                 <td>{{ enrollment.course.id }}</td>
-                <td>{{ enrollment.course.name }}</td>
+                <td><a href="{% url 'course_detail' enrollment.course.id %}">{{ enrollment.course.name }}</a></td>
                 <td>{{ enrollment.course.instructor }}</td>
                 <td>0</td>
                 <td>-</td>
