@@ -1,20 +1,24 @@
+{% load django_bootstrap5 %}
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Login</title>
+    {% bootstrap_css %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
-<body>
-    <h2>Login</h2>
-    <form method="post">
+<body class="w-100 d-flex justify-content-center align-items-center bb">
+<div class="w-50 p-5 register-form-container shadow">
+    <form method="post" class="m-3 d-flex flex-column align-items-center">
         {% csrf_token %}
-        <label for="username">Username:</label>
-        <input type="text" name="username" id="username">
+        <input type="text" name="username" id="username" class="form-control form-control-lg shadow" placeholder="Enter username">
         <br>
-        <label for="password">Password:</label>
-        <input type="password" name="password" id="password">
+        <input type="password" name="password" id="password" class="form-control form-control-lg shadow" placeholder="Enter password">
         <br>
-        <input type="submit" value="Login">
+        <input type="submit" value="Login" class="btn rounded-pill px-5 py-2 btn-color mt-2 fs-5">
     </form>
     <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+</div>
+{% bootstrap_javascript %}
 </body>
 </html>
