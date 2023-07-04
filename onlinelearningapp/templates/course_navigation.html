@@ -6,13 +6,28 @@
 <body>
 <div class="course-navigation">
     <!-- navigation.html -->
-
+<div> Welcome to the Course {{ course.name }} by {{ course.instructor }}</div>
 <ul>
- <!-- {% for section in sections %}  -->
+  {% for section in sections %}
     <li>
-    <comment> <a href="#section{{ section.id }}">{{ section.name }}</a>
+    <a href="#section{{ section.id }}">{{ section.name }}</a>
+
+
+        <p>{{ section.description }}</p>
+
+        {% for content in contents %}
+             {% if content.content_type == 'pdf' %}
+                 <a href="{{ content.filepath.url }}" target="#" download>View PDF  </a> <br>
+
+
+             {% elif content.content_type  == 'video' %}
+                 <a href="{{ content.filepath.url }}" target="#">View Video</a><br>
+             {% elif content.content_type == 'txt' %}
+
+             {% endif %}
+        {% endfor %}
     </li>
-  <!-- {% endfor %} -->
+   {% endfor %}
 </ul>
 
 

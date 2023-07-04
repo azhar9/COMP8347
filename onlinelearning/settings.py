@@ -135,3 +135,7 @@ EMAIL_FILE_PATH = BASE_DIR / "sent_emails"
 # EMAIL_HOST_PASSWORD = 'vazzbhfadbhiqmbm'  # Your Gmail password
 # EMAIL_USE_TLS = True
 # DEFAULT_FROM_EMAIL = 'ailabs.cult@gmail.com'  # The email address to use as the sender
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

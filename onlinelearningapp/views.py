@@ -8,9 +8,13 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.http import FileResponse
 from django.views import View
+import os
 
+from onlinelearning import settings
 from .models import Role, UserProfile, Course, Membership, Enrollment, Section, CourseContent
+
 
 # TODO: use class based views
 def register(request):
@@ -90,6 +94,7 @@ def forgot_password(request):
 def index(request):
     return redirect('login_view')
 
+
 def enrollCourse(request):
     course_id = request.GET['courseId']
 
@@ -97,7 +102,6 @@ def enrollCourse(request):
     course_enrollment.course_id = course_id
     course_enrollment.student_id = request.user.id
     course_enrollment.save()
-
 
     return redirect('home')
 
@@ -181,7 +185,6 @@ class CourseView(View):
         return redirect('home')
 
 
-
 class CourseDetailView(View):
     def get(self, request, courseid):
         # TODO: get an object here with section and their respective content
@@ -202,13 +205,12 @@ class CourseDetailView(View):
         }
         print(context)
         return render(request, 'course_detail.html', context)
-    
+
     def post(self, request, courseid):
         course = get_object_or_404(Course, id=courseid)
         course.published = True
         course.save()
         return redirect('course_detail', courseid=courseid)
-
 
 
 class AddSectionView(View):
@@ -302,12 +304,20 @@ class AddContentView(View):
 
 
 class CourseNavigationView(View):
-    def get(self, request, course_id):
-        course = get_object_or_404(Course, id=course_id)
+    def get(self, request, courseid):
+        course = get_object_or_404(Course, id=courseid)
         sections = course.section_set.all().order_by('order')
 
         # Get all the course contents related to the sections
         section_ids = sections.values_list('id', flat=True)
         contents = CourseContent.objects.filter(section__id__in=section_ids).order_by('order')
+        contents_pdf = {}
+        #  for content in contents:
+        #       file_path = os.path.join(settings.MEDIA_ROOT, content.filepath)
+        #      if os.path.exists(file_path):
+        #         with open(file_path, 'rb') as pdf_file:
+        #            pdf = FileResponse(pdf_file, content_type='application/pdf')
+        #            contents_pdf[content.id] = pdf
 
-        return render(request, 'course_navigation.html', {'course': course, 'sections': sections, 'contents': contents})
+        return render(request, 'course_navigation.html',
+                      {'course': course, 'sections': sections, 'contents': contents, 'files': contents_pdf})
