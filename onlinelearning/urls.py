@@ -20,7 +20,7 @@ from django.urls import path
 
 from onlinelearningapp.views import register, HomeView, login_view, forgot_password, index, CourseView, \
     CourseDetailView, SectionView, AddSectionView, AddContentView, ProfileView, enrollCourse, CourseNavigationView, \
-    dropCourse
+    dropCourse, CourseContentFileView
 
 urlpatterns = [
     path('', index, name='index'),
@@ -48,4 +48,5 @@ urlpatterns = [
     path('courses/<int:courseid>/<int:sectionid>/add-content/', AddContentView.as_view(), name='add_content'),
     path('courses/<int:courseid>/<int:sectionid>/<int:coursecontentid>', AddContentView.as_view(), name='add_content'),
     path('course_navigation/<courseid>', CourseNavigationView.as_view(), name='course_navigation'),
+    path('course/content/<int:coursecontentid>/', CourseContentFileView.as_view(), name='coursecontent'),
 ]

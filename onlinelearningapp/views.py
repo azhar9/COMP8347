@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.views import View
 import os
 
@@ -318,6 +318,26 @@ class CourseNavigationView(View):
         #         with open(file_path, 'rb') as pdf_file:
         #            pdf = FileResponse(pdf_file, content_type='application/pdf')
         #            contents_pdf[content.id] = pdf
-
+        # print(contents)
         return render(request, 'course_navigation.html',
                       {'course': course, 'sections': sections, 'contents': contents, 'files': contents_pdf})
+
+class CourseContentFileView(View):
+    def get(self, request, coursecontentid):
+        # Get the PDF file path based on the provided ID
+        content = get_object_or_404(CourseContent, id=coursecontentid)
+        pdf_file_path = os.path.join(settings.MEDIA_ROOT, str(content.filepath))
+        # Check if the PDF file exists
+        if os.path.exists(pdf_file_path):
+            # Open the PDF file in binary mode
+            pdf_file = open(pdf_file_path, 'rb')
+
+            # Create the response with appropriate headers
+            response = FileResponse(pdf_file, content_type='application/pdf')
+            response['Content-Length'] = os.path.getsize(pdf_file_path)
+            return response
+            
+        else:
+            # Handle the case if the PDF file doesn't exist
+            return HttpResponse("PDF file not found", status=404)
+
