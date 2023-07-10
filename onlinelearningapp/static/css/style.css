@@ -15,11 +15,29 @@ a {
   background: white;
 }
 
-.btn-color {
+.btn-color-primary {
     background: #597D0A;
     color: white;
 }
 
+.btn-color-secondary {
+    background: #898A86;
+    color: white;
+}
+
+.btn-color-success {
+    background: #5DA600;
+    color: white;
+ }
+
 .register-logo {
     width: 400px;
+}
+
+hr {
+  border-color: black !important; /* black color */
+  border-width: 2px !important; /* 4px thick border */
+  border-style: solid; /* solid border style */
+  margin-top: 20px; /* 3px margin on top */
+  margin-bottom: 20px; /* 3px margin on bottom */
 }

@@ -1,53 +1,93 @@
+{% load django_bootstrap5 %}
+{% load static %}
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Course Detail</title>
-    </head>
-    <body>
-        <h1>
-            <a href="{% url 'home'%}">Courses</a> >
-            {{ course.name }}
-        </h1>
-        <div>
-            {% if user_profile.role.name == 'student' %}
-                <div>
-                    <div> <strong>Course Overview: </strong> {{ course.description }}</div>
-                    <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>
-                    <h2>Course Sections:</h2>
-                    {% for section in sections %}
-                    <div>
-                        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{ section.name }}</a>
-                    </div>
-                    {% empty %}
-                        <p>No contents found</p>
-                    {% endfor %}
-                    {% if enrollments %}
-                    <input type="button" onclick="location.href='/dropCourse.do?courseId={{ course.id }}'" value="Drop"/>
-                    {% else %}
-                    <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"/>
-            {% endif %}
-                </div>
-            {% else %}
-                <form method="post">
-                    {% csrf_token %}
-                    {% if course.published == False %}
-                        <input type="submit" name="publish" value="Publish">
-                    {% endif %}
-                </form>
-                <div> <strong>Course Overview: </strong> {{ course.description }}</div>
-                <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>
-                <div><strong>Published:</strong> {{ course.published }}</div>
-                <h2>Course Sections:</h2>
-                     {% for section in sections %}
-                        <div>
-                            <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{ section.name }}</a>
-                        </div>
-                     {% empty %}
-                         <p>No contents found</p>
-                    {% endfor %}
+<head>
+    <title>Course Detail</title>
+    {% bootstrap_css %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/home-student.css' %}" rel="stylesheet">
+</head>
+<body class="p-4">
+<h1>
+    <a href="{% url 'home'%}">Courses</a> > {{ course.name }}
+</h1>
+{% if user_profile.role.name == 'student' %}
+<div class="unregistered-course-information-banner w-100 p-4 rounded-4 d-flex flex-column align-items-center"
+     style="background: white;">
+    <div class="unregistered-course-information-banner-title">Advanced Computing Concepts</div>
+    <div class="unregistered-course-information-banner-body d-flex my-4">
+        <div class="unregistered-course-information-banner-body-profile d-flex flex-column align-items-center me-4">
+            <div class="unregistered-course-information-banner-body-profile-pic">
+                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
+            </div>
+            <div class="unregistered-course-information-banner-body-profile-name">
+                {{ course.membership_level_required.name }}
+            </div>
+        </div>
+        <div class="unregistered-course-information-banner-description">
+            In the heart of a bustling city, a solitary figure found solace on a weathered bench. Lost in thought, they
+            pondered the tapestry of life, where ordinary moments intertwined with extraordinary ones. A stray cat's
+            unexpected visit brought a glimmer of connection. Inspired, the figure rose and embarked on a moonlit path,
+            guided by the promise of endless possibilities. Laughter, music, and street aromas filled the air as the
+            city
+            awakened. They embraced life's joys and sorrows, leaving behind traces of inspiration. As the night
+            whispered
+            tales of possibility, the world spun in its cosmic dance, ever-changing and full of wonder.
+        </div>
+    </div>
+    {% if not enrollments %}
+    <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"
+           class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
+    {% endif %}
+</div>
+{% endif %}
 
-                 <a href="{% url 'add_section' courseid=course.id %}"><button>Add Section</button></a>
-                    {%  endif %}
-                 </div>
-    </body>
+<!--<div>-->
+<!--    {% if user_profile.role.name == 'student' %}-->
+<!--    <div>-->
+<!--        <div><strong>Course Overview: </strong> {{ course.description }}</div>-->
+<!--        <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>-->
+<!--        <h2>Course Sections:</h2>-->
+<!--        {% for section in sections %}-->
+<!--        <div>-->
+<!--            <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{-->
+<!--                section.name }}</a>-->
+<!--        </div>-->
+<!--        {% empty %}-->
+<!--        <p>No contents found</p>-->
+<!--        {% endfor %}-->
+<!--        {% if enrollments %}-->
+<!--        <input type="button" onclick="location.href='/dropCourse.do?courseId={{ course.id }}'" value="Drop"/>-->
+<!--        {% else %}-->
+<!--        <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"/>-->
+<!--        {% endif %}-->
+<!--    </div>-->
+<!--    {% else %}-->
+<!--    <form method="post">-->
+<!--        {% csrf_token %}-->
+<!--        {% if course.published == False %}-->
+<!--        <input type="submit" name="publish" value="Publish">-->
+<!--        {% endif %}-->
+<!--    </form>-->
+<!--    <div><strong>Course Overview: </strong> {{ course.description }}</div>-->
+<!--    <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>-->
+<!--    <div><strong>Published:</strong> {{ course.published }}</div>-->
+<!--    <h2>Course Sections:</h2>-->
+<!--    {% for section in sections %}-->
+<!--    <div>-->
+<!--        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{-->
+<!--            section.name }}</a>-->
+<!--    </div>-->
+<!--    {% empty %}-->
+<!--    <p>No contents found</p>-->
+<!--    {% endfor %}-->
+
+<!--    <a href="{% url 'add_section' courseid=course.id %}">-->
+<!--        <button>Add Section</button>-->
+<!--    </a>-->
+<!--    {% endif %}-->
+<!--</div>-->
+{% bootstrap_javascript %}
+</body>
 </html>

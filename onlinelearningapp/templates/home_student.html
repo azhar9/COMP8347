@@ -1,106 +1,65 @@
+{% load django_bootstrap5 %}
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        td.capitalize, div.capitalize {
-        text-transform: uppercase;
-    }
-        table, th, td {
-        border:1px solid black;
-    }
-    </style>
     <title>Student Home</title>
+    {% bootstrap_css %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/home-student.css' %}" rel="stylesheet">
 </head>
-<body>
-    <h2>Welcome to the Student Home Page</h2>
-    <div>
-        <img src="img_chania.jpg" alt="Test icon" width="49" height="30">
+<body class="p-4">
+<div class="d-flex w-100 justify-content-between py-4 row g-0">
+    <div class="d-flex flex-row align-items-center col-md-6 justify-content-between">
+        <div>
+            <img src="{% static 'images/Eduhub-4 2.png' %}" class="home-page-logo">
+        </div>
+        <div class="fs-2 fw-bold">
+            Hello, {{ student_name }}
+        </div>
     </div>
-    <div class="bg-light-blue, capitalize">
-        <i class="fa-solid fa-graduation-cap"></i>
-        {{ student_name }}
+    <div class="d-flex flex-row align-items-center col-md-6 justify-content-end">
+        <input type="button" value="Profile" onclick="location.href='/profile'"
+               class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Logout" class="btn btn-color-secondary rounded-pill px-5 py-2">
+        </form>
     </div>
-
-    <!-- Logout Button -->
-    <form action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="Logout">
-    </form>
-    <div>
-    <input type="button" value="Profile" onclick="location.href='/profile'">
-    </div>
-    <div>
-        <h2>Your Courses</h2>
-        <table style="width:100%">
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Instructor</th>
-                <th>Status(% completed)</th>
-                <th>Certificate</th>
-            </tr>
-            {% for enrollment in enrollments %}
-            <tr>
-                <td>{{ enrollment.course.id }}</td>
-                <td><a href="{% url 'course_detail' enrollment.course.id %}">{{ enrollment.course.name }}</a></td>
-                <td>{{ enrollment.course.instructor }}</td>
-                <td>0</td>
-                <td>-</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    <div>
-        <h2>Bronze Courses</h2>
-        <table style="width:100%">
-            <tr>
-                <th>Membership</th>
-                <th>Id</th>
-                <th>Name</th>
-            </tr>
-             {% for course in bronze_courses %}
-            <tr>
-                <td class = "capitalize">{{ course.membership_level_required.name }}</td>
-                <td>{{ course.id }}</td>
-
-                <td><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></td>
-            </tr>
+</div>
+<hr>
+<div>
+    <h2 class="fs-4 fw-bold">Your Registered Courses</h2>
+    <div class="registered_courses d-flex flex-row justify-content-start flex-wrap">
+        {% for enrollment in enrollments %}
+        {% include 'registered_course_tile.html' with enrollment=enrollment %}
         {% endfor %}
-        </table>
     </div>
-    <div>
-        <h2>Silver Courses</h2>
-        <table style="width:100%">
-            <tr>
-                <th>Membership</th>
-                <th>Id</th>
-                <th>Name</th>
-            </tr>
-             {% for course in silver_courses %}
-            <tr>
-                <td class = "capitalize">{{ course.membership_level_required.name }}</td>
-                <td>{{ course.id }}</td>
-                <td><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></td>
-            </tr>
+</div>
+<div>
+    <h2 class="fs-4 fw-bold">Bronze Courses</h2>
+    <div class="unregistered_courses d-flex flex-row justify-content-start flex-wrap">
+        {% for course in bronze_courses %}
+        {% include 'unregistered_course_tile.html' with course=course %}
         {% endfor %}
-        </table>
     </div>
-    <div>
-        <h2>Gold Courses</h2>
-        <table style="width:100%">
-            <tr>
-                <th>Membership</th>
-                <th>Id</th>
-                <th>Name</th>
-            </tr>
-             {% for course in gold_courses %}
-            <tr>
-                <td class = "capitalize">{{ course.membership_level_required.name }}</td>
-                <td>{{ course.id }}</td>
-                <td><a href="{% url 'course_detail' course.id %}">{{ course.name }}</a></td>
-            </tr>
+</div>
+<div>
+    <h2 class="fs-4 fw-bold">Silver Courses</h2>
+    <div class="unregistered_courses d-flex flex-row justify-content-start flex-wrap">
+        {% for course in silver_courses %}
+        {% include 'unregistered_course_tile.html' with course=course %}
         {% endfor %}
-        </table>
     </div>
+</div>
+<div>
+    <h2 class="fs-4 fw-bold">Gold Courses</h2>
+    <div class="unregistered_courses d-flex flex-row justify-content-start flex-wrap">
+        {% for course in gold_courses %}
+        {% include 'unregistered_course_tile.html' with course=course %}
+        {% endfor %}
+    </div>
+</div>
+{% bootstrap_javascript %}
 </body>
 </html>
