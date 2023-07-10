@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Membership Details</title>
+</head>
+<body>
+    <h1>Current membership : {{ user_profile.membership.name }}</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="membership">Change membership type:</label>
+        <select id="membership" name="membership">
+            <option value="bronze">Bronze</option>
+            <option value="silver">Silver</option>
+            <option value="gold">Gold</option>
+        </select>
+        <br>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

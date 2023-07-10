@@ -155,6 +155,20 @@ class ProfileView(View):
         context = {'user_profile': user_profile}
         return render(request, 'profile.html', context)
 
+class ChangeMembership(View):
+    def get(self,request):
+        user_profile = UserProfile.objects.get(user=request.user)
+        context = {'user_profile': user_profile}
+        return render(request, 'change_membership.html', context)
+
+    def post(self, request):
+        membership_name = request.POST.get('membership')
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        user_profile.membership = Membership.objects.get(name=membership_name)
+        user_profile.save()
+        return redirect('profile')
+
+
 
 class CourseView(View):
     template_name = 'course_builder.html'

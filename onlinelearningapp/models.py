@@ -43,7 +43,7 @@ class UserProfile(TimestampedModel):
     membership = models.ForeignKey(Membership, on_delete=models.SET_NULL, null=True, default=3)
 
     def __str__(self):
-        return f"Username: {self.user.username}, Role: {self.role.name}, Membership: {self.membership.name}"
+        return f"'''Username: {self.user.username}, Role: {self.role.name},''' Membership: {self.membership.name}"
 
 
 '''
