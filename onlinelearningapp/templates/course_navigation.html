@@ -2,35 +2,89 @@
 <html>
 <head>
     <title>Course Navigator</title>
+    <style>
+        .sidebar {
+            float: left;
+            width: 25%;
+        }
+
+        .content {
+            float: right;
+            width: 75%;
+        }
+
+        .pdf-viewer {
+            height: 500px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-<div class="course-navigation">
-    <!-- navigation.html -->
-<div> Welcome to the Course {{ course.name }} by {{ course.instructor }}</div>
-<ul>
-  {% for section in sections %}
-    <li>
-    <a href="#section{{ section.id }}">{{ section.name }}</a>
-
-
-        <p>{{ section.description }}</p>
-
-        {% for content in contents %}
-             {% if content.content_type == 'pdf' %}
-                 <a href="{{ content.filepath.url }}" target="#" download>View PDF  </a> <br>
-
-
-             {% elif content.content_type  == 'video' %}
-                 <a href="{{ content.filepath.url }}" target="#">View Video</a><br>
-             {% elif content.content_type == 'txt' %}
-
-             {% endif %}
-        {% endfor %}
-    </li>
-   {% endfor %}
-</ul>
-
-
+<div class="sidebar">
+    <div class="course-navigation">
+        <!-- navigation.html -->
+        <div>Welcome to the Course {{ course.name }} by {{ course.instructor }}</div>
+        <ul>
+          <li>
+            Section
+            <ul>
+              {% for content in contents %}
+              <li>
+                <a href="#{{ content.id }}">{{ content.name }}</a>
+              </li>
+              
+              {% endfor %}
+            </ul>
+          </li>
+    </div>
 </div>
+
+<div class="content">
+    <div class="pdf-viewer">
+        <iframe id="pdf-iframe" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+    </div>
+</div>
+
+<script>
+    // JavaScript code for loading PDF in the PDF viewer
+    var pdfViewerDiv = document.querySelector('.pdf-viewer');
+    var pdfIframe = document.getElementById('pdf-iframe');
+    
+    // Update the PDF viewer source when a course section is clicked
+    var sectionLinks = document.querySelectorAll('.course-navigation a');
+    sectionLinks.forEach(function(link) {
+        link.addEventListener('click', function(event) {
+            event.preventDefault();
+            
+            var courseContentId = link.getAttribute('href').substr(1);
+            console.log(courseContentId);
+
+            
+            // Make a request to your API endpoint with the section ID
+            fetch(`/course/content/${courseContentId}/`)
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error('Error fetching PDF file');
+                    }
+                    return response.blob();
+                })
+                .then(function(blob) {
+                    // Create a URL object from the blob data
+                    var pdfUrl = URL.createObjectURL(blob);
+                    
+                    // Update the PDF viewer iframe source
+                    pdfIframe.src = pdfUrl;
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    // Handle the error case
+                });
+        });
+    });
+
+    sectionLinks[0].click()
+</script>
+
 </body>
 </html>
