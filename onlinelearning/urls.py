@@ -18,14 +18,14 @@ from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.urls import path
 
-from onlinelearningapp.views import register, HomeView, login_view, forgot_password, index, CourseView, \
+from onlinelearningapp.views import RegisterView, HomeView, login_view, forgot_password, index, CourseView, \
     CourseDetailView, SectionView, AddSectionView, AddContentView, ProfileView, enrollCourse, CourseNavigationView, \
     dropCourse, CourseContentFileView, ChangeMembership
 
 urlpatterns = [
     path('', index, name='index'),
     path('admin/', admin.site.urls),
-    path('register/', register, name='register'),
+    path('register/', RegisterView.as_view(), name='register'),
     path('home/', HomeView.as_view(), name='home'),
     path('login/', login_view, name='login_view'),
     path('logout/', auth_views.LogoutView.as_view(next_page='login_view'), name='logout'),

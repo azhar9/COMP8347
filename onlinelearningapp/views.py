@@ -17,8 +17,10 @@ from .models import Role, UserProfile, Course, Membership, Enrollment, Section, 
 
 
 # TODO: use class based views
-def register(request):
-    if request.method == 'POST':
+class RegisterView(View):
+    def get (self, request):
+        return render(request, 'register.html')
+    def post(self, request):
         username = request.POST['username']
         email = request.POST['email']
         password = request.POST['password']
@@ -34,7 +36,7 @@ def register(request):
         UserProfile.objects.create(user=user, role=role_obj)
         return redirect('home')  # Redirect to the home page after successful registration
 
-    return render(request, 'register.html')
+        return render(request, 'register.html')
 
 
 def login_view(request):
@@ -155,8 +157,9 @@ class ProfileView(View):
         context = {'user_profile': user_profile}
         return render(request, 'profile.html', context)
 
+
 class ChangeMembership(View):
-    def get(self,request):
+    def get(self, request):
         user_profile = UserProfile.objects.get(user=request.user)
         context = {'user_profile': user_profile}
         return render(request, 'change_membership.html', context)
@@ -167,7 +170,6 @@ class ChangeMembership(View):
         user_profile.membership = Membership.objects.get(name=membership_name)
         user_profile.save()
         return redirect('profile')
-
 
 
 class CourseView(View):
@@ -336,6 +338,7 @@ class CourseNavigationView(View):
         return render(request, 'course_navigation.html',
                       {'course': course, 'sections': sections, 'contents': contents, 'files': contents_pdf})
 
+
 class CourseContentFileView(View):
     def get(self, request, coursecontentid):
         # Get the PDF file path based on the provided ID
@@ -350,8 +353,7 @@ class CourseContentFileView(View):
             response = FileResponse(pdf_file, content_type='application/pdf')
             response['Content-Length'] = os.path.getsize(pdf_file_path)
             return response
-            
+
         else:
             # Handle the case if the PDF file doesn't exist
             return HttpResponse("PDF file not found", status=404)
-
