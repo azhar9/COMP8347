@@ -9,13 +9,27 @@
     <form method="post">
         {% csrf_token %}
         <label for="membership">Change membership type:</label>
-        <select id="membership" name="membership">
+        <select id="membership" name="membership" onchange="selectedMemberShip()">
             <option value="bronze">Bronze</option>
             <option value="silver">Silver</option>
             <option value="gold">Gold</option>
         </select>
+        <input type="hidden" id="selected-membership" name="selected_membership" value="{{ selected_membership }}">
         <br>
         <button type="submit">Submit</button>
     </form>
+    {{ selected_membership }}
+    {{ user_profile.membership.name  }}
+     {% if selected_membership is not null and user_profile.membership.name != selected_membership %}
+        <div>
+            {% include 'payment.html' with user=user_profile  %}
+        </div>
+    {% endif %}
 </body>
+<script>
+    function selectedMemberShip() {
+        var selectElement = document.getElementById("membership");
+         document.getElementById("selected-membership").value = selectElement.value;
+    }
+</script>
 </html>

@@ -18,8 +18,9 @@ from .models import Role, UserProfile, Course, Membership, Enrollment, Section, 
 
 # TODO: use class based views
 class RegisterView(View):
-    def get (self, request):
+    def get(self, request):
         return render(request, 'register.html')
+
     def post(self, request):
         username = request.POST['username']
         email = request.POST['email']
@@ -100,12 +101,26 @@ def index(request):
 def enrollCourse(request):
     course_id = request.GET['courseId']
 
-    course_enrollment = Enrollment()
-    course_enrollment.course_id = course_id
-    course_enrollment.student_id = request.user.id
-    course_enrollment.save()
+    course_details = get_object_or_404(Course, id=course_id)
+    print("Course details found")
+    user_profile = UserProfile.objects.get(user_id=request.user.id)
+    print("Found the elememtns")
+    print("Course membershoip Type", course_details.membership_level_required)
+    print("User membershoip Type", user_profile.membership)
+    try:
+        if course_details.membership_level_required.name != user_profile.membership.name:
+            enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=course_id)
+        else:
+            # print("Enrollments found")
+            course_enrollment = Enrollment()
+            course_enrollment.course_id = course_id
+            course_enrollment.student_id = request.user.id
+            course_enrollment.save()
 
-    return redirect('home')
+        return redirect('home')
+    except Enrollment.DoesNotExist:
+        print("Inside Does notExist error")
+        return render(request, 'payment.html')
 
 
 def dropCourse(request):
@@ -357,3 +372,8 @@ class CourseContentFileView(View):
         else:
             # Handle the case if the PDF file doesn't exist
             return HttpResponse("PDF file not found", status=404)
+
+
+class Payment(View):
+    def get(self):
+        return redirect('profile')
