@@ -15,6 +15,10 @@ a {
   background: white !important;
 }
 
+.background-off-white {
+    background: #E9E9E9 !important;
+}
+
 .btn-color-primary {
     background: #597D0A;
     color: white;

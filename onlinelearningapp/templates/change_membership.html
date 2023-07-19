@@ -10,37 +10,51 @@
     <link href="{% static 'css/membership.css' %}" rel="stylesheet">
 </head>
 <body class="p-4">
-<div class="fs-3">You are currently subscribed to {{ user_profile.membership.name }} courses. Upgrade your current
+<div class="fs-4 fw-bold">You are currently subscribed to {{ user_profile.membership.name }} courses. Upgrade your
+    current
     membership to
     explore more exciting options and enhance your learning experience.
 </div>
 
-<div class="d-flex flex-row justify-content-around">
-    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between" id="bronze">
+<div class="d-flex flex-row justify-content-around mt-5">
+    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between"
+         id="bronze">
         <div class="fs-3 fw-bold">Bronze</div>
         <img src="{% static 'images/Bronze-Star.png' %}" class="membership-star">
         <div>Access to a limited selection of study materials.</div>
         <div>Easy level courses.</div>
         <div class="fs-3 fw-bold">FREE</div>
-        <button type="button" id="bronze-button" onclick="selectMembership('Bronze')" class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe</button>
+        <button type="button" id="bronze-button" onclick="selectMembership('Bronze')"
+                class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe
+        </button>
     </div>
-    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between" id="silver">
+    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between"
+         id="silver">
         <div class="fs-3 fw-bold">Silver</div>
         <img src="{% static 'images/Silver-Star.png' %}" class="membership-star">
         <div>Access to a wide range of study materials.</div>
         <div>Medium level courses</div>
-        <div class="fs-3 fw-bold">One time charge:</div>
-        <div class="fs-3 fw-bold">$100</div>
-        <button type="button" id="silver-button" onclick="selectMembership('Silver')" class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe</button>
+        <div class="d-flex flex-column align-items-center">
+            <div class="fs-3 fw-bold">One time charge:</div>
+            <div class="fs-3 fw-bold">$100</div>
+        </div>
+        <button type="button" id="silver-button" onclick="selectMembership('Silver')"
+                class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe
+        </button>
     </div>
-    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between" id="gold">
+    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between"
+         id="gold">
         <div class="fs-3 fw-bold">Gold</div>
         <img src="{% static 'images/Gold-Star.png' %}" class="membership-star">
         <div>All the available courses are accessible.</div>
         <div>Hard level courses.</div>
-        <div class="fs-3 fw-bold">One time charge:</div>
-        <div class="fs-3 fw-bold">$300</div>
-        <button type="button" id="gold-button" onclick="selectMembership('Gold')" class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe</button>
+        <div class="d-flex flex-column align-items-center">
+            <div class="fs-3 fw-bold">One time charge:</div>
+            <div class="fs-3 fw-bold">$300</div>
+        </div>
+        <button type="button" id="gold-button" onclick="selectMembership('Gold')"
+                class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe
+        </button>
     </div>
 </div>
 
@@ -67,9 +81,9 @@
         let currentMembership = "{{ user_profile.membership.name }}";
         if (currentMembership) {
             document.getElementById(currentMembership + '-button').disabled = true;
+            document.getElementById(currentMembership.toLowerCase()).classList.add('background-off-white');
         }
     }
-
 
 
 
