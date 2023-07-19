@@ -7,6 +7,7 @@
     <title>Register</title>
     {% bootstrap_css %}
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/membership.css' %}" rel="stylesheet">
 </head>
 <body class="p-4">
 <div class="fs-3">You are currently subscribed to {{ user_profile.membership.name }} courses. Upgrade your current
@@ -14,30 +15,32 @@
     explore more exciting options and enhance your learning experience.
 </div>
 
-<div class="d-flex flex-row">
-    <div class="membership-option" id="bronze">
-        <h2>Bronze</h2>
+<div class="d-flex flex-row justify-content-around">
+    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between" id="bronze">
+        <div class="fs-3 fw-bold">Bronze</div>
         <img src="{% static 'images/Bronze-Star.png' %}" class="membership-star">
         <div>Access to a limited selection of study materials.</div>
         <div>Easy level courses.</div>
-        <div>FREE</div>
-        <button type="button" id="bronze-button" onclick="selectMembership('Bronze')">Subscribe</button>
+        <div class="fs-3 fw-bold">FREE</div>
+        <button type="button" id="bronze-button" onclick="selectMembership('Bronze')" class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe</button>
     </div>
-    <div class="membership-option" id="silver">
-        <h2>Silver</h2>
+    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between" id="silver">
+        <div class="fs-3 fw-bold">Silver</div>
         <img src="{% static 'images/Silver-Star.png' %}" class="membership-star">
         <div>Access to a wide range of study materials.</div>
         <div>Medium level courses</div>
-        <div>One time charge: $100</div>
-        <button type="button" id="silver-button" onclick="selectMembership('Silver')">Subscribe</button>
+        <div class="fs-3 fw-bold">One time charge:</div>
+        <div class="fs-3 fw-bold">$100</div>
+        <button type="button" id="silver-button" onclick="selectMembership('Silver')" class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe</button>
     </div>
-    <div class="membership-option" id="gold">
-        <h2>Gold</h2>
+    <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between" id="gold">
+        <div class="fs-3 fw-bold">Gold</div>
         <img src="{% static 'images/Gold-Star.png' %}" class="membership-star">
         <div>All the available courses are accessible.</div>
         <div>Hard level courses.</div>
-        <div>One time charge: $300</div>
-        <button type="button" id="gold-button" onclick="selectMembership('Gold')">Subscribe</button>
+        <div class="fs-3 fw-bold">One time charge:</div>
+        <div class="fs-3 fw-bold">$300</div>
+        <button type="button" id="gold-button" onclick="selectMembership('Gold')" class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe</button>
     </div>
 </div>
 

@@ -11,7 +11,7 @@ a {
     text-decoration: none;
 }
 
-.form-background-white {
+.background-white {
   background: white !important;
 }
 
@@ -40,8 +40,4 @@ hr {
   border-style: solid; /* solid border style */
   margin-top: 20px; /* 3px margin on top */
   margin-bottom: 20px; /* 3px margin on bottom */
-}
-
-.membership-star {
-    width: 40px;
 }
