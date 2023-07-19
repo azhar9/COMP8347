@@ -3,33 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <title>Membership Details</title>
+    <style>
+        .membership-option {
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Current membership : {{ user_profile.membership.name }}</h1>
-    <form method="post">
+    <h1>You are currently subscribed to {{ user_profile.membership.name }}</h1>
+
+    <div class="membership-option" id="bronze">
+        <h2>Bronze</h2>
+        <button type="button" id="bronze-button" onclick="selectMembership('bronze')">Subscribe</button>
+    </div>
+    <div class="membership-option" id="silver">
+        <h2>Silver</h2>
+        <button type="button" id="silver-button" onclick="selectMembership('silver')">Subscribe</button>
+    </div>
+    <div class="membership-option" id="gold">
+        <h2>Gold</h2>
+        <button type="button" id="gold-button" onclick="selectMembership('gold')">Subscribe</button>
+    </div>
+
+    <form method="post" id="membership-form">
         {% csrf_token %}
-        <label for="membership">Change membership type:</label>
-        <select id="membership" name="membership" onchange="selectedMemberShip()">
-            <option value="bronze">Bronze</option>
-            <option value="silver">Silver</option>
-            <option value="gold">Gold</option>
-        </select>
-        <input type="hidden" id="selected-membership" name="selected_membership" value="{{ selected_membership }}">
-        <br>
-        <button type="submit">Submit</button>
+        <input type="hidden" id="selected-membership" name="selected_membership">
+        <button type="submit" style="display:none">Submit</button>
     </form>
-    {{ selected_membership }}
-    {{ user_profile.membership.name  }}
-     {% if selected_membership is not null and user_profile.membership.name != selected_membership %}
+
+    {% if selected_membership is not null and user_profile.membership.name != selected_membership %}
         <div>
-            {% include 'payment.html' with user=user_profile  %}
+            {% include 'payment.html' with user=user_profile %}
         </div>
     {% endif %}
 </body>
 <script>
-    function selectedMemberShip() {
-        var selectElement = document.getElementById("membership");
-         document.getElementById("selected-membership").value = selectElement.value;
+    function selectMembership(membershipType) {
+        document.getElementById('selected-membership').value = membershipType;
+        document.getElementById('membership-form').submit();
+    }
+
+    window.onload = function() {
+        let currentMembership = "{{ user_profile.membership.name }}";
+        if (currentMembership) {
+            document.getElementById(currentMembership + '-button').disabled = true;
+        }
     }
 </script>
 </html>

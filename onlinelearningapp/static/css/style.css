@@ -11,8 +11,8 @@ a {
     text-decoration: none;
 }
 
-.register-form-container {
-  background: white;
+.form-background-white {
+  background: white !important;
 }
 
 .btn-color-primary {
