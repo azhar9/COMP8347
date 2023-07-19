@@ -15,18 +15,18 @@
 {% if user_profile.role.name == 'student' %}
 <div class="unregistered-course-information-banner w-100 p-4 rounded-4 d-flex flex-column align-items-center"
      style="background: white;">
-    <div class="unregistered-course-information-banner-title">{{ course.description }}</div>
+    <div class="unregistered-course-information-banner-title">{{ course.name }}</div>
     <div class="unregistered-course-information-banner-body d-flex my-4">
         <div class="unregistered-course-information-banner-body-profile d-flex flex-column align-items-center me-4">
             <div class="unregistered-course-information-banner-body-profile-pic">
                 <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
             </div>
             <div class="unregistered-course-information-banner-body-profile-name">
-                {{ person_name_here }}
+                {{ course.instructor }}
             </div>
         </div>
         <div class="unregistered-course-information-banner-description">
-
+            {{ course.description }}
         </div>
     </div>
     {% if not enrollments %}

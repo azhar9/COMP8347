@@ -10,7 +10,7 @@
 </head>
 <body class="w-100 d-flex flex-column justify-content-center align-items-center">
 <img src="{% static 'images/Eduhub-4 2.png' %}" class="register-logo">
-<div class="w-50 p-5 register-form-container shadow">
+<div class="w-50 p-5 register-form-container shadow rounded-3">
     <form method="post" class="m-3 d-flex flex-column align-items-center">
         {% csrf_token %}
         <input type="text" id="username" name="username" class="form-control form-control-lg shadow"

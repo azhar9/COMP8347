@@ -8,17 +8,21 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
 <body class="w-100 d-flex justify-content-center align-items-center bb">
-<div class="w-50 p-5 register-form-container shadow">
+<div class="w-50 p-5 register-form-container shadow d-flex flex-column rounded-3">
     <form method="post" class="m-3 d-flex flex-column align-items-center">
         {% csrf_token %}
-        <input type="text" name="username" id="username" class="form-control form-control-lg shadow" placeholder="Enter username">
+        <input type="text" name="username" id="username" class="form-control form-control-lg shadow"
+               placeholder="Enter username">
         <br>
-        <input type="password" name="password" id="password" class="form-control form-control-lg shadow" placeholder="Enter password">
+        <input type="password" name="password" id="password" class="form-control form-control-lg shadow"
+               placeholder="Enter password">
         <br>
         <input type="submit" value="Login" class="btn rounded-pill px-5 py-2 btn-color-primary mt-2 fs-5">
     </form>
-    <a href="{% url 'forgot_password' %}">Forgot Password?</a>
-    <a href ="{% url 'register' %}">Register</a>
+    <div class="d-flex flex-row justify-content-between">
+        <a class="fs-5" href="{% url 'forgot_password' %}">Forgot Password?</a>
+        <a class="fs-5" href="{% url 'register' %}">Register</a>
+    </div>
 </div>
 {% bootstrap_javascript %}
 </body>
