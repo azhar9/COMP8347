@@ -1,41 +1,58 @@
+{% load django_bootstrap5 %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Membership Details</title>
-    <style>
-        .membership-option {
-            margin-bottom: 20px;
-        }
-    </style>
+    <title>Register</title>
+    {% bootstrap_css %}
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
 </head>
-<body>
-    <h1>You are currently subscribed to {{ user_profile.membership.name }}</h1>
+<body class="p-4">
+<div class="fs-3">You are currently subscribed to {{ user_profile.membership.name }} courses. Upgrade your current
+    membership to
+    explore more exciting options and enhance your learning experience.
+</div>
 
+<div class="d-flex flex-row">
     <div class="membership-option" id="bronze">
         <h2>Bronze</h2>
-        <button type="button" id="bronze-button" onclick="selectMembership('bronze')">Subscribe</button>
+        <img src="{% static 'images/Bronze-Star.png' %}" class="membership-star">
+        <div>Access to a limited selection of study materials.</div>
+        <div>Easy level courses.</div>
+        <div>FREE</div>
+        <button type="button" id="bronze-button" onclick="selectMembership('Bronze')">Subscribe</button>
     </div>
     <div class="membership-option" id="silver">
         <h2>Silver</h2>
-        <button type="button" id="silver-button" onclick="selectMembership('silver')">Subscribe</button>
+        <img src="{% static 'images/Silver-Star.png' %}" class="membership-star">
+        <div>Access to a wide range of study materials.</div>
+        <div>Medium level courses</div>
+        <div>One time charge: $100</div>
+        <button type="button" id="silver-button" onclick="selectMembership('Silver')">Subscribe</button>
     </div>
     <div class="membership-option" id="gold">
         <h2>Gold</h2>
-        <button type="button" id="gold-button" onclick="selectMembership('gold')">Subscribe</button>
+        <img src="{% static 'images/Gold-Star.png' %}" class="membership-star">
+        <div>All the available courses are accessible.</div>
+        <div>Hard level courses.</div>
+        <div>One time charge: $300</div>
+        <button type="button" id="gold-button" onclick="selectMembership('Gold')">Subscribe</button>
     </div>
+</div>
 
-    <form method="post" id="membership-form">
-        {% csrf_token %}
-        <input type="hidden" id="selected-membership" name="selected_membership">
-        <button type="submit" style="display:none">Submit</button>
-    </form>
+<form method="post" id="membership-form">
+    {% csrf_token %}
+    <input type="hidden" id="selected-membership" name="selected_membership">
+    <button type="submit" style="display:none">Submit</button>
+</form>
 
-    {% if selected_membership is not null and user_profile.membership.name != selected_membership %}
-        <div>
-            {% include 'payment.html' with user=user_profile %}
-        </div>
-    {% endif %}
+{% if selected_membership is not null and user_profile.membership.name != selected_membership %}
+<div>
+    {% include 'payment.html' with user=user_profile %}
+</div>
+{% endif %}
+{% bootstrap_javascript %}
 </body>
 <script>
     function selectMembership(membershipType) {
@@ -49,5 +66,10 @@
             document.getElementById(currentMembership + '-button').disabled = true;
         }
     }
+
+
+
+
+
 </script>
 </html>

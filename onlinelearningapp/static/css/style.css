@@ -41,3 +41,7 @@ hr {
   margin-top: 20px; /* 3px margin on top */
   margin-bottom: 20px; /* 3px margin on bottom */
 }
+
+.membership-star {
+    width: 40px;
+}
