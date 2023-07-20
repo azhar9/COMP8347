@@ -34,6 +34,10 @@ a {
     color: white;
  }
 
+ .btn-color-disabled {
+    background: rgba(24, 24, 24, 0.38);
+ }
+
 .register-logo {
     width: 400px;
 }
