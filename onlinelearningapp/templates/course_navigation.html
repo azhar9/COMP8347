@@ -1,7 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Course Navigator</title>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Course Navigator
+{% endblock %}
+{% block content %}
+<div>
     <style>
         .sidebar {
             float: left;
@@ -19,33 +22,36 @@
             margin-bottom: 20px;
         }
     </style>
-</head>
-<body>
-<div class="sidebar">
-    <div class="course-navigation">
-        <!-- navigation.html -->
-        <div>Welcome to the Course {{ course.name }} by {{ course.instructor }}</div>
-        <ul>
-          <li>
-            Section
+    <div class="sidebar rounded-4" style="background: white;">
+        <div class="course-navigation">
+            <!-- navigation.html -->
+            <div>Welcome to the Course {{ course.name }} by {{ course.instructor }}</div>
             <ul>
-              {% for content in contents %}
-              <li>
-                <a href="#{{ content.id }}">{{ content.name }}</a>
-              </li>
-              
-              {% endfor %}
-            </ul>
-          </li>
+                {% for section, contents in sections.items %}
+                    <li>
+                        {{section}}
+                        <ul>
+                            {% for content in contents %}
+                            <li>
+                                <a href="#{{ content.id }}">{{ content.name }}</a>
+                            </li>
+                            
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endfor %}
+        </div>
+    </div>
+
+    <div class="content rounded-4" style="background: white;">
+        <div class="pdf-viewer">
+            <iframe id="pdf-iframe" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+        </div>
     </div>
 </div>
+{% endblock %}
 
-<div class="content">
-    <div class="pdf-viewer">
-        <iframe id="pdf-iframe" frameborder="0" style="width: 100%; height: 100%;"></iframe>
-    </div>
-</div>
-
+{% block script %}
 <script>
     // JavaScript code for loading PDF in the PDF viewer
     var pdfViewerDiv = document.querySelector('.pdf-viewer');
@@ -85,6 +91,5 @@
 
     sectionLinks[0].click()
 </script>
+{% endblock %}
 
-</body>
-</html>

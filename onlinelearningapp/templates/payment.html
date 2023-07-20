@@ -1,29 +1,26 @@
-{% load django_bootstrap5 %}
-{% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-    {% bootstrap_css %}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-</head>
-<body>
+{% extends 'base.html' %}
 
-        <!-- Show payment page -->
-        <h2>Payment Page</h2>
-        <!-- Include payment form or relevant content -->
+{% block title %}
+Payment
+{% endblock %}
+
+{% block content %}
+
+    <!-- Show payment page -->
+    <h2>Payment Page</h2>
+    <!-- Include payment form or relevant content -->
+    <!-- Example: -->
+    <form method="post" action="{% url 'payment' %}">
+        {% csrf_token %}
+        <!-- Payment form fields -->
         <!-- Example: -->
-        <form method="post" action="{% url 'payment' %}">
-            {% csrf_token %}
-            <!-- Payment form fields -->
-            <!-- Example: -->
-            <label for="card_number">Card Number:</label>
-            <input type="text" id="card_number" name="card_number" required>
-            <br>
-            <label for="expiry_date">Expiry Date:</label>
-            <input type="text" id="expiry_date" name="expiry_date" required>
-            <br>
-            <button type="submit">Make Payment</button>
-        </form>
-</body>
+        <label for="card_number">Card Number:</label>
+        <input type="text" id="card_number" name="card_number" required>
+        <br>
+        <label for="expiry_date">Expiry Date:</label>
+        <input type="text" id="expiry_date" name="expiry_date" required>
+        <br>
+        <button type="submit">Make Payment</button>
+    </form>
+{% endblock %}
 </html>

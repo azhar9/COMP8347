@@ -1,17 +1,10 @@
-{% load django_bootstrap5 %}
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Course Detail</title>
-    {% bootstrap_css %}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <link href="{% static 'css/home-student.css' %}" rel="stylesheet">
-</head>
-<body class="p-4">
-<h1>
-    <a href="{% url 'home'%}">Courses</a> > {{ course.name }}
-</h1>
+{% block title %}
+Course Detail
+{% endblock %}
+{% block content %}
+<div class="p-4">
 {% if user_profile.role.name == 'student' %}
 <div class="unregistered-course-information-banner w-100 p-4 rounded-4 d-flex flex-column align-items-center"
      style="background: white;">
@@ -32,31 +25,17 @@
     {% if not enrollments %}
     <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"
            class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
+    {% else %}
+    <input type="button" onclick="location.href='{% url 'course_navigation' courseid=course.id%}'" value="Continue"
+           class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
+    <input type="button" onclick="location.href='/dropCourse.do?courseId={{ course.id }}'" value="Drop"
+           class="btn-color-primary btn rounded-pill px-5 py-2 me-3 my-2">
     {% endif %}
 </div>
 {% endif %}
 
 <div>
-    {% if user_profile.role.name == 'student' %}
-    <div>
-        <div><strong>Course Overview: </strong> {{ course.description }}</div>
-        <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>
-        <h2>Course Sections:</h2>
-        {% for section in sections %}
-        <div>
-            <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{
-                section.name }}</a>
-        </div>
-        {% empty %}
-        <p>No contents found</p>
-        {% endfor %}
-        {% if enrollments %}
-        <input type="button" onclick="location.href='/dropCourse.do?courseId={{ course.id }}'" value="Drop"/>
-        {% else %}
-        <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"/>
-        {% endif %}
-    </div>
-    {% else %}
+    {% if user_profile.role.name == 'teacher' %}
     <form method="post">
         {% csrf_token %}
         {% if course.published == False %}
@@ -81,6 +60,4 @@
     </a>
     {% endif %}
 </div>
-{% bootstrap_javascript %}
-</body>
-</html>
+{% endblock %}
