@@ -357,10 +357,9 @@ class CourseNavigationView(View):
         sections = OrderedDict()
         for sect in section_list:
             sections[sect.name] = list(sect.coursecontent_set.all())
-            
+
         for key in sections.keys():
             print(sections[key])
-        
 
         # contents = CourseContent.objects.filter(section__id__in=section_ids).order_by('order')
 
@@ -400,5 +399,22 @@ class CourseContentFileView(View):
 
 
 class Payment(View):
-    def get(self):
+    def get(self, request):
+        membership_selected = request.GET.get('membership_selected')
+        user_profile = UserProfile.objects.get(user=request.user)
+        existing_membership = user_profile.membership.name
+        response = render(request, 'payment.html',
+                          {'membership_selected': membership_selected, 'existing_membership': existing_membership})
+        response.set_cookie('membership_selected', membership_selected, max_age=60)
+        response.set_cookie('existing_membership', existing_membership, max_age=60)
+        return response
+
+    def post(self, request):
+        membership_name = str(request.COOKIES.get('membership_selected')).lower()
+        print(membership_name)
+        existing_membership = request.COOKIES.get('existing_membership')
+        print(existing_membership)
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        user_profile.membership = Membership.objects.get(name=membership_name)
+        user_profile.save()
         return redirect('profile')

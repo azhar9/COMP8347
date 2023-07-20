@@ -7,19 +7,28 @@ Payment
 {% block content %}
 
     <!-- Show payment page -->
-    <h2>Payment Page</h2>
+    <h2>Payments :Membership upgrade </h2>
     <!-- Include payment form or relevant content -->
     <!-- Example: -->
     <form method="post" action="{% url 'payment' %}">
         {% csrf_token %}
         <!-- Payment form fields -->
         <!-- Example: -->
-        <label for="card_number">Card Number:</label>
-        <input type="text" id="card_number" name="card_number" required>
-        <br>
+        <p>If You want to upgrade your membership to <strong> {{ membership_selected }} </strong>  from  <strong> {{ existing_membership }}  </strong> .Please do the payment
+        <p>   <br>
+        {{ membership_selected | upper }} <br><br>
+        <p> You have to pay only once and start using our enhanced course materials</p>
+        <h1>Card Details Information</h1>
+        <label for="owner">Owner Name:</label>
+        <input type="text" id="owner" name="name" required><br><br>
+        <label for="card_number">Credit/Debit Card Number:</label>
+        <input type="text" id="card_number" name="card_number" maxlength="16" placeholder="xxxx-xxxx-xxxx-xxxx" required>
+        <br><br><br>
         <label for="expiry_date">Expiry Date:</label>
-        <input type="text" id="expiry_date" name="expiry_date" required>
-        <br>
+        <input type="date" id="expiry_date" name="expiry_date" required>
+        <br><br><br>
+        <label for="cvv">Cvv:</label>
+        <input type="input" id="cvv" name="cvv" required maxlength="4" width="1">
         <button type="submit">Make Payment</button>
     </form>
 {% endblock %}
