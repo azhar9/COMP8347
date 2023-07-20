@@ -10,6 +10,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.http import FileResponse, HttpResponse
 from django.views import View
+from collections import OrderedDict
 import os
 
 from onlinelearning import settings
@@ -120,7 +121,10 @@ def enrollCourse(request):
         return redirect('home')
     except Enrollment.DoesNotExist:
         print("Inside Does notExist error")
-        return render(request, 'payment.html')
+        context = {
+            'student_name': user_profile.user.username
+        }
+        return render(request, 'payment.html', context)
 
 
 def dropCourse(request):
@@ -169,14 +173,20 @@ class HomeView(View):
 class ProfileView(View):
     def get(self, request):
         user_profile = UserProfile.objects.get(user=request.user)
-        context = {'user_profile': user_profile}
+        context = {
+            'user_profile': user_profile,
+            'student_name': user_profile.user.username,
+        }
         return render(request, 'profile.html', context)
 
 
 class ChangeMembership(View):
     def get(self, request):
         user_profile = UserProfile.objects.get(user=request.user)
-        context = {'user_profile': user_profile}
+        context = {
+            'user_profile': user_profile,
+            'student_name': user_profile.user.username
+        }
         return render(request, 'change_membership.html', context)
 
     def post(self, request):
@@ -223,6 +233,7 @@ class CourseDetailView(View):
         course = get_object_or_404(Course, id=courseid)
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
+        print(user_profile.membership.name)
         try:
             enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
         except Enrollment.DoesNotExist:
@@ -232,7 +243,8 @@ class CourseDetailView(View):
             'course': course,
             'sections': sections,
             'user_profile': user_profile,
-            'enrollments': enrollments
+            'enrollments': enrollments,
+            'student_name': user_profile.user.username
         }
         print(context)
         return render(request, 'course_detail.html', context)
@@ -336,13 +348,22 @@ class AddContentView(View):
 
 class CourseNavigationView(View):
     def get(self, request, courseid):
+        user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
-        sections = course.section_set.all().order_by('order')
+        section_list = course.section_set.all().order_by('order')
 
-        # Get all the course contents related to the sections
-        section_ids = sections.values_list('id', flat=True)
-        contents = CourseContent.objects.filter(section__id__in=section_ids).order_by('order')
-        contents_pdf = {}
+        # # Get all the course contents related to the sections
+        # section_ids = section_list.values_list('id', flat=True)
+        sections = OrderedDict()
+        for sect in section_list:
+            sections[sect.name] = list(sect.coursecontent_set.all())
+            
+        for key in sections.keys():
+            print(sections[key])
+        
+
+        # contents = CourseContent.objects.filter(section__id__in=section_ids).order_by('order')
+
         #  for content in contents:
         #       file_path = os.path.join(settings.MEDIA_ROOT, content.filepath)
         #      if os.path.exists(file_path):
@@ -350,8 +371,12 @@ class CourseNavigationView(View):
         #            pdf = FileResponse(pdf_file, content_type='application/pdf')
         #            contents_pdf[content.id] = pdf
         # print(contents)
-        return render(request, 'course_navigation.html',
-                      {'course': course, 'sections': sections, 'contents': contents, 'files': contents_pdf})
+        context = {
+            'student_name': user_profile.user.username,
+            'course': course,
+            'sections': sections,
+        }
+        return render(request, 'course_navigation.html', context)
 
 
 class CourseContentFileView(View):

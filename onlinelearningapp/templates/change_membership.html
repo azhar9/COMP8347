@@ -1,15 +1,12 @@
-{% load django_bootstrap5 %}
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Register</title>
-    {% bootstrap_css %}
-    <link href="{% static 'css/style.css' %}" rel="stylesheet">
-    <link href="{% static 'css/membership.css' %}" rel="stylesheet">
-</head>
-<body class="p-4">
+
+{% block title %}
+Change Membership
+{% endblock %}
+
+{% block content %}
+<div class="p-4">
 <div class="fs-4 fw-bold">You are currently subscribed to {{ user_profile.membership.name }} courses. Upgrade your
     current
     membership to
@@ -69,8 +66,9 @@
     {% include 'payment.html' with user=user_profile %}
 </div>
 {% endif %}
-{% bootstrap_javascript %}
-</body>
+</div>
+{% endblock %}
+{% block script %}
 <script>
     function selectMembership(membershipType) {
         document.getElementById('selected-membership').value = membershipType;
@@ -85,4 +83,4 @@
         }
     }
 </script>
-</html>
+{% endblock %}
