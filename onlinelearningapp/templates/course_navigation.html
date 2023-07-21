@@ -37,7 +37,7 @@ Course Navigator
                         <ul>
                             {% for content in contents %}
                             <li>
-                                <a href="#{{ content.id }}">{{ content.name }}</a>
+                                <a href="{% url 'course_navigation_content' courseid=course.id coursecontentid=content.id %}">{{ content.name }}</a>
                             </li>
                             
                             {% endfor %}
@@ -49,11 +49,14 @@ Course Navigator
 
     <div class="content rounded-4 px-1 py-2" style="background: white;">
         <div class="pdf-viewer" id="pdf-viewer"></div>
+        {% if courseProgress.status is not True %}
         <div class="d-flex flex-column align-items-center mt-2">
-            <input type="button" onclick="location.href='{% url 'course_navigation' courseid=course.id%}'" value="Mark as Complete"
-               class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
+            <form method="post">
+                {% csrf_token %}
+                <input type="submit" value="Mark as Complete" class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
+            </form>
         </div>
-        <!-- <div id="pdf-viewer"></div> -->
+        {% endif %}
     </div>
 </div>
 {% endblock %}
@@ -61,6 +64,8 @@ Course Navigator
 {% block script %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
+    var courseContentId = "{{ coursecontent.id }}";
+    
     function renderPDF(pdfUrl) {
     const pdfViewerContainer = document.getElementById('pdf-viewer');
 
@@ -111,39 +116,23 @@ Course Navigator
       }
     });
   }
-    // JavaScript code for loading PDF in the PDF viewer
-    var pdfViewerDiv = document.querySelector('.content .pdf-viewer');
-
-    // Update the PDF viewer source when a course section is clicked
-    var sectionLinks = document.querySelectorAll('.course-navigation a');
-    sectionLinks.forEach(function(link) {
-        link.addEventListener('click', function(event) {
-            pdfViewerDiv.innerHTML = null;
-            event.preventDefault();
-            
-            var courseContentId = link.getAttribute('href').substr(1);
-            
-            // Make a request to your API endpoint with the section ID
-            fetch(`/course/content/${courseContentId}/`)
-                .then(function(response) {
-                    if (!response.ok) {
-                        throw new Error('Error fetching PDF file');
-                    }
-                    return response.blob();
-                })
-                .then(function(blob) {
-                    // Create a URL object from the blob data
-                    var pdfUrl = URL.createObjectURL(blob);
-                    renderPDF(pdfUrl);
-                })
-                .catch(function(error) {
-                    console.error(error);
-                    // Handle the error case
-                });
+    // Make a request to your API endpoint with the courseContentId
+    fetch(`/course/content/${courseContentId}`)
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error('Error fetching PDF file');
+            }
+            return response.blob();
+        })
+        .then(function(blob) {
+            // Create a URL object from the blob data
+            var pdfUrl = URL.createObjectURL(blob);
+            renderPDF(pdfUrl);
+        })
+        .catch(function(error) {
+            console.error(error);
+            // Handle the error case
         });
-    });
-
-    sectionLinks[0].click()
 </script>
 {% endblock %}
 

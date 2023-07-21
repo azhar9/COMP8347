@@ -37,9 +37,11 @@ Change Membership
             <div class="fs-3 fw-bold">One time charge:</div>
             <div class="fs-3 fw-bold">$100</div>
         </div>
+        <a href="{% url 'payment' %}?membership_selected=silver">
         <button type="button" id="silver-button" onclick="selectMembership('Silver')"
                 class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe
         </button>
+        </a>
     </div>
     <div class="membership-option background-white d-flex flex-column align-items-center p-4 rounded-4 justify-content-between"
          id="gold">
@@ -51,9 +53,11 @@ Change Membership
             <div class="fs-3 fw-bold">One time charge:</div>
             <div class="fs-3 fw-bold">$300</div>
         </div>
+        <a href="{% url 'payment' %}?membership_selected=gold">
         <button type="button" id="gold-button" onclick="selectMembership('Gold')"
                 class="btn rounded-pill px-5 py-1 btn-color-primary mt-2 fs-5">Subscribe
         </button>
+        </a>
     </div>
 </div>
 
