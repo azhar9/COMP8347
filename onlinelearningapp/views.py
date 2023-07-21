@@ -124,7 +124,9 @@ def enrollCourse(request):
     except Enrollment.DoesNotExist:
         print("Inside Does notExist error")
         context = {
-            'student_name': user_profile.user.username
+            'student_name': user_profile.user.username,
+            'membership_selected': course_details.membership_level_required.name,
+            'existing_membership': user_profile.membership.name
         }
         return render(request, 'payment.html', context)
 
@@ -414,6 +416,7 @@ class CourseContentFileView(View):
 
 class Payment(View):
     def get(self, request):
+        print('Insdie payment view')
         membership_selected = request.GET.get('membership_selected')
         user_profile = UserProfile.objects.get(user=request.user)
         existing_membership = user_profile.membership.name
@@ -429,20 +432,21 @@ class Payment(View):
         response = render(request, 'payment.html',
                           {'membership_selected': membership_selected, 'existing_membership': existing_membership})
         response.set_cookie('membership_selected', membership_selected, max_age=60)
-        response.set_cookie('existing_membership', existing_membership, max_age=60)
+        # response.set_cookie('existing_membership', existing_membership, max_age=60)
         # response.set_cookie('existing_membership', existing_membership, max_age=60)
         return response
 
     def post(self, request):
-        membership_name = str(request.COOKIES.get('membership_selected')).lower()
-        print(membership_name)
-        existing_membership = request.COOKIES.get('existing_membership')
-        print(existing_membership)
+        membership_name = request.COOKIES.get('membership_selected')
+        print(f"existing_membership form cookie is : {membership_name}")
+        if membership_name is None:
+            membership_name = request.GET.get('membership_selected')
+            print(f"membership selected  form GET is : {membership_name}")
         # existing_membership = request.COOKIES.get('existing_membership')
         user_profile = get_object_or_404(UserProfile, user=request.user)
-        existing_membership = Membership.objects.get(name=membership_name)
-        print(existing_membership)
+        existing_membership = user_profile.membership
+        print(f"existing_membership from dB is : {existing_membership}")
 
-        user_profile.membership = Membership.objects.get(name=membership_name)
+        user_profile.membership = Membership.objects.get(name=existing_membership.name)
         user_profile.save()
         return redirect('profile')
