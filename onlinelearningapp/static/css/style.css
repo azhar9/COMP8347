@@ -4,7 +4,7 @@ html {
 
 body {
   min-height: 100%;
-  background: linear-gradient(180deg, #FDFDB8 47.92%, rgba(138, 195, 143, 0.00) 100%) !important;
+  background: linear-gradient(180deg, #B2DFFF 0%, rgba(167, 102, 206, 0.00) 99.99%, rgba(177, 51, 255, 0.00) 100%);
 }
 
 a {
@@ -48,4 +48,13 @@ hr {
   border-style: solid; /* solid border style */
   margin-top: 20px; /* 3px margin on top */
   margin-bottom: 20px; /* 3px margin on bottom */
+}
+
+a {
+    color: black;
+}
+
+.right-arrow {
+    width: 5px;
+    height: 10px;
 }
