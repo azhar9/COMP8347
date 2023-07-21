@@ -13,17 +13,18 @@ Course Navigator
 
         .content {
             float: right;
+            border: 1px solid #ccc;
             width: 75%;
+            overflow: hidden; /* Hide any content overflow from the container */
         }
 
         .pdf-viewer {
-            height: 500px;
-            border: 1px solid #ccc;
-            margin-bottom: 20px;
+            height: 55vh;
+            overflow:auto;
         }
     </style>
-    <div class="sidebar rounded-4" style="background: white;">
-        <div class="course-navigation">
+    <div class="sidebar px-2">
+        <div class="course-navigation rounded-4" style="background: white;">
             <!-- navigation.html -->
             <div>Welcome to the Course {{ course.name }} by {{ course.instructor }}</div>
             <ul>
@@ -43,29 +44,81 @@ Course Navigator
         </div>
     </div>
 
-    <div class="content rounded-4" style="background: white;">
-        <div class="pdf-viewer">
-            <iframe id="pdf-iframe" frameborder="0" style="width: 100%; height: 100%;"></iframe>
+    <div class="content rounded-4 px-1 py-2" style="background: white;">
+        <div class="pdf-viewer" id="pdf-viewer"></div>
+        <div class="d-flex flex-column align-items-center mt-2">
+            <input type="button" onclick="location.href='{% url 'course_navigation' courseid=course.id%}'" value="Mark as Complete"
+               class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
         </div>
+        <!-- <div id="pdf-viewer"></div> -->
     </div>
 </div>
 {% endblock %}
 
 {% block script %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
 <script>
+    function renderPDF(pdfUrl) {
+    const pdfViewerContainer = document.getElementById('pdf-viewer');
+
+    // PDF.js viewer options
+    const options = {
+      showSidebar: false,
+      showToolbar: false,
+    };
+
+    // Initialize PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+
+    // Load and render the PDF
+    pdfjsLib.getDocument(pdfUrl).promise.then(function(pdfDoc) {
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+        pdfDoc.getPage(pageNum).then(function(page) {
+            const pdfCanvas = document.createElement('canvas');
+          pdfViewerContainer.appendChild(pdfCanvas);
+          const pdfCanvasContext = pdfCanvas.getContext('2d');
+          
+          var scrollbarWidth = 20;
+          // Get the dimensions of the container
+          const containerWidth = pdfViewerContainer.clientWidth - scrollbarWidth;
+          const containerHeight = pdfViewerContainer.clientHeight;
+
+          // Get the original dimensions of the PDF page
+          const viewport = page.getViewport({ scale: 1 });
+          const pageWidth = viewport.width;
+          const pageHeight = viewport.height;
+
+          // Calculate the scale ratio to fit the page width within the container
+          const scale = (containerWidth) / pageWidth;
+
+          // Set the canvas dimensions based on the scaled page
+          pdfCanvas.width = containerWidth;
+          pdfCanvas.height = pageHeight * scale; // Maintain the original height
+
+
+          // Set the render context with the new scaled dimensions
+          const renderContext = {
+            canvasContext: pdfCanvasContext,
+            viewport: page.getViewport({ scale: scale }),
+          };
+
+          // Render the page
+          page.render(renderContext);
+        });
+      }
+    });
+  }
     // JavaScript code for loading PDF in the PDF viewer
-    var pdfViewerDiv = document.querySelector('.pdf-viewer');
-    var pdfIframe = document.getElementById('pdf-iframe');
-    
+    var pdfViewerDiv = document.querySelector('.content .pdf-viewer');
+
     // Update the PDF viewer source when a course section is clicked
     var sectionLinks = document.querySelectorAll('.course-navigation a');
     sectionLinks.forEach(function(link) {
         link.addEventListener('click', function(event) {
+            pdfViewerDiv.innerHTML = null;
             event.preventDefault();
             
             var courseContentId = link.getAttribute('href').substr(1);
-            console.log(courseContentId);
-
             
             // Make a request to your API endpoint with the section ID
             fetch(`/course/content/${courseContentId}/`)
@@ -78,9 +131,7 @@ Course Navigator
                 .then(function(blob) {
                     // Create a URL object from the blob data
                     var pdfUrl = URL.createObjectURL(blob);
-                    
-                    // Update the PDF viewer iframe source
-                    pdfIframe.src = pdfUrl;
+                    renderPDF(pdfUrl);
                 })
                 .catch(function(error) {
                     console.error(error);
