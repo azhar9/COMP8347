@@ -3,13 +3,17 @@
         <h5 class="card-title">{{ enrollment.course.name }}</h5>
         <div class="card-text">{{ enrollment.course.instructor }}</div>
         <div class="progress my-2">
-            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0"
-                 aria-valuemax="100">25%
+            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="{{ progress_percentage}}"
+                 aria-valuemin="0"
+                 aria-valuemax="100">{{progress_percentage}}%
             </div>
         </div>
+        {% if progress == total %}
         <form method="post">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm rounded-pill btn-color-success px-3 mt-2">Download Certificate</button>
+            <button type="submit" class="btn btn-sm rounded-pill btn-color-success px-3 mt-2">Download Certificate
+            </button>
         </form>
+        {% endif %}
     </div>
 </div>

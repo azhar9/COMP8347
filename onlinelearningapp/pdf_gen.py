@@ -14,13 +14,7 @@ options = {
     "javascript-delay": "1000",
     "log-level": "error"
 }
-
-
-def saveHtml(html, outfile="posts.html"):
-    with open(outfile, 'w', encoding='utf8') as htmlfile:
-        htmlfile.write(html)
-    return outfile
-
+path_to_wkhtmltopdf = '/path/to/wkhtmltopdf'
 
 def generate_pdf(studentName, dateStr, instructorName, pdfFilePath):
     html = '''

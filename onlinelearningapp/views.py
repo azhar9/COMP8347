@@ -1,20 +1,22 @@
+import os
+from collections import OrderedDict
+from math import ceil
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.http import FileResponse, HttpResponse
 from django.views import View
-from collections import OrderedDict
-import os
 
 from onlinelearning import settings
-from .models import Role, UserProfile, Course, Membership, Enrollment, Section, CourseContent
+from .models import Role, UserProfile, Course, Membership, Enrollment, Section, CourseContent, CourseProgress
 
 
 # TODO: use class based views
@@ -152,6 +154,13 @@ class HomeView(View):
             return render(request, 'home_teacher.html', context)
         else:
             enrollments = Enrollment.objects.filter(student_id=request.user.id)
+            for enrollment in enrollments:
+                section_ids = Section.objects.filter(course_id=enrollment.course.id).values_list('id', flat=True)
+                total = len(section_ids)
+                course_progress_ids = CourseProgress.objects.filter(course_content_id__in=section_ids,
+                                                                    status=True).values_list('id', flat=True)
+                progress = len(course_progress_ids)
+
             bronze_courses = []
             silver_courses = []
             gold_courses = []
@@ -166,7 +175,11 @@ class HomeView(View):
                        'bronze_courses': bronze_courses,
                        'silver_courses': silver_courses,
                        'gold_courses': gold_courses,
-                       'enrollments': enrollments}
+                       'enrollments': enrollments,
+                       'total': total,
+                       'progress': progress,
+                       'progress_percentage': ceil((progress / total) * 100)
+                       }
             return render(request, 'home_student.html', context)
 
 
