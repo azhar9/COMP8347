@@ -4,28 +4,31 @@
 Course Navigator
 {% endblock %}
 {% block content %}
-<div>
-    <style>
-        .sidebar {
-            float: left;
-            width: 25%;
-        }
+<style>
+    .main-container {
+        height:65vh;
+    }
+    .sidebar {
+        float: left;
+        width: 25%;
+        height:100%;
+    }
 
-        .content {
-            float: right;
-            border: 1px solid #ccc;
-            width: 75%;
-            overflow: hidden; /* Hide any content overflow from the container */
-        }
+    .content {
+        float: right;
+        width: 75%;
+        height:100%;
+        overflow: hidden; /* Hide any content overflow from the container */
+    }
 
-        .pdf-viewer {
-            height: 55vh;
-            overflow:auto;
-        }
-    </style>
+    .pdf-viewer {
+        height: 90%;
+        overflow:auto;
+    }
+</style>
+<div class="main-container">
     <div class="sidebar px-2">
-        <div class="course-navigation rounded-4" style="background: white;">
-            <!-- navigation.html -->
+        <div class="course-navigation rounded-4" style="background: white; min-height:100%; height:100%;">
             <div>Welcome to the Course {{ course.name }} by {{ course.instructor }}</div>
             <ul>
                 {% for section, contents in sections.items %}
