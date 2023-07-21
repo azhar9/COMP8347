@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-Student Home
+Teacher Home
 {% endblock %}
 {% block content %}
 
-<div class="fs-3 fw-bold">Your Course List</div>
 
-<div class="row justify-content-between">
+<div class="row justify-content-around">
     <div class="col-4">
+        <div class="fs-3 fw-bold">Your Course List</div>
         {% for course in course_list %}
         <div class="fs-5 fw-bold background-white px-4 py-2 my-2 rounded-3 d-flex flex-row justify-content-between align-items-center">
             <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a>
@@ -17,11 +17,11 @@ Student Home
         {% endfor %}
     </div>
     <div class="col-4">
-        <div class="background-white d-flex flex-column justify-content-start p-5 rounded-3 fs-5 fw-bold">
+        <div class="background-white d-flex flex-column justify-content-center align-items-center p-5 rounded-3 fs-5 fw-bold">
             Expand your impact by creating more courses and enlightening minds from all corners of the globe. Embrace
             the joy of teaching, and let your expertise shine on our platform.
             <a href="{% url 'create_course' %}">
-                <button>Create Course</button>
+                <button class="btn rounded-pill px-5 py-1 btn-color-primary mt-5 fs-5">Upload More Courses</button>
             </a>
         </div>
     </div>
