@@ -149,8 +149,9 @@ class HomeView(View):
         course_list = Course.objects.all()
         if user_profile.role.name == "teacher":
             # teacher home page
-            context = {'course_list': course_list}
-            print(course_list)
+            courses_per_instructor = Course.objects.filter(instructor=request.user.id)
+            print(request.user.id)
+            context = {'course_list': courses_per_instructor}
             return render(request, 'home_teacher.html', context)
         else:
             enrollments = Enrollment.objects.filter(student_id=request.user.id)
