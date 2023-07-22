@@ -596,7 +596,10 @@ def download_certificate(request, courseid):
     course = Course.objects.get(pk=courseid)
     if certificate:
         filepath = certificate.filepath
-    else:
+    pdf_file_path = os.path.join(settings.CERTIFICATE_PATH, str(filepath))
+    if not os.path.exists(pdf_file_path) or not certificate:
+        if certificate:
+            certificate.delete()
         currentDate = datetime.now().strftime('%Y-%m-%d')
         randomGuid = str(uuid.uuid4())
         filepath = randomGuid + '.pdf'
@@ -604,6 +607,7 @@ def download_certificate(request, courseid):
         pdf_file_path = os.path.join(settings.CERTIFICATE_PATH, str(filepath))
         if not PdfGen.generate_pdf(user_profile.user.username, currentDate, instructor_name, pdf_file_path):
             return HttpResponse("Interval Server Error", status=500)
+
         certificate = Certificate(
             student=request.user,
             course=course,
