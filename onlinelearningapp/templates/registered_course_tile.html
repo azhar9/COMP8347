@@ -3,13 +3,16 @@
         <h5 class="card-title text-color-black">{{ enrollment.course.name }}</h5>
         <div class="card-text text-color-black">{{ enrollment.course.instructor }}</div>
         <div class="progress my-2">
-            <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0"
-                 aria-valuemax="100">25%
-            </div>
+            <div class="progress-bar" role="progressbar" style="width: {{ enrollment.progress }}%;" aria-valuenow="25" aria-valuemin="0"
+            aria-valuemax="100"> {{ enrollment.progress }}%
         </div>
+    </div>
+    {% if enrollment.progress is 100 %}
         <form method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-sm rounded-pill btn-color-success px-3 mt-2">Download Certificate</button>
-        </form>
+        </form>   
+    {% endif %}
+    <a href="{% url 'course_navigation' enrollment.course.id %}" class="btn btn-sm rounded-pill btn-color-success px-3">continue learning</a>
     </div>
 </div>

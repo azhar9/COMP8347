@@ -1,20 +1,22 @@
+import os
+from collections import OrderedDict
+from math import ceil
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.http import FileResponse, HttpResponse
 from django.views import View
-from collections import OrderedDict
-import os
 
 from onlinelearning import settings
-from .models import Role, UserProfile, Course, Membership, Enrollment, Section, CourseContent
+from .models import Role, UserProfile, Course, Membership, Enrollment, Section, CourseContent, CourseProgress
 
 
 # TODO: use class based views
@@ -122,7 +124,9 @@ def enrollCourse(request):
     except Enrollment.DoesNotExist:
         print("Inside Does notExist error")
         context = {
-            'student_name': user_profile.user.username
+            'student_name': user_profile.user.username,
+            'membership_selected': course_details.membership_level_required.name,
+            'existing_membership': user_profile.membership.name
         }
         return render(request, 'payment.html', context)
 
@@ -147,11 +151,19 @@ class HomeView(View):
         course_list = Course.objects.all()
         if user_profile.role.name == "teacher":
             # teacher home page
-            context = {'course_list': course_list}
-            print(course_list)
+            courses_per_instructor = Course.objects.filter(instructor=request.user.id)
+            print(request.user.id)
+            context = {'course_list': courses_per_instructor}
             return render(request, 'home_teacher.html', context)
         else:
-            enrollments = Enrollment.objects.filter(student_id=request.user.id)
+            enrollments = Enrollment.objects.filter(student_id=request.user.id)   
+            for enrollment in enrollments:
+                course_progress_count = CourseProgress.objects.filter(enrollment=enrollment, status=True).count()
+                course_contents_count = CourseContent.objects.filter(section__course_id=enrollment.course.id).count()
+                enrollment.progress = 100
+                if course_contents_count is not 0:
+                    enrollment.progress = int((course_progress_count / course_contents_count) * 100)
+
             bronze_courses = []
             silver_courses = []
             gold_courses = []
@@ -166,7 +178,8 @@ class HomeView(View):
                        'bronze_courses': bronze_courses,
                        'silver_courses': silver_courses,
                        'gold_courses': gold_courses,
-                       'enrollments': enrollments}
+                       'enrollments': enrollments,
+                       }
             return render(request, 'home_student.html', context)
 
 
@@ -229,7 +242,6 @@ class CourseView(View):
 class CourseDetailView(View):
     def get(self, request, courseid):
         # TODO: get an object here with section and their respective content
-        # print(courseid)
         course = get_object_or_404(Course, id=courseid)
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
@@ -347,7 +359,7 @@ class AddContentView(View):
 
 
 class CourseNavigationView(View):
-    def get(self, request, courseid):
+    def get(self, request, courseid, coursecontentid=None):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
         section_list = course.section_set.all().order_by('order')
@@ -357,26 +369,49 @@ class CourseNavigationView(View):
         sections = OrderedDict()
         for sect in section_list:
             sections[sect.name] = list(sect.coursecontent_set.all())
+            
+        # if contentid is not specified, then redirect to the first content in first section
+        if coursecontentid is None:
+            # TODO: skip to first non-complete content instead of always taking first. If all contents are complete, display download certi page
+            section = next(iter(sections.values()))
+            content = section[0]
+            return redirect('course_navigation_content', courseid=courseid, coursecontentid=content.id)
 
-        for key in sections.keys():
-            print(sections[key])
+        coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
+        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
+        
+        course_progress_count = CourseProgress.objects.filter(enrollment=enrollment, status=True).count()
+        course_contents_count = CourseContent.objects.filter(section__course_id=enrollment.course.id).count()
+        progress = 100
+        if course_contents_count is not 0:
+            progress = int((course_progress_count / course_contents_count) * 100)
 
-        # contents = CourseContent.objects.filter(section__id__in=section_ids).order_by('order')
-
-        #  for content in contents:
-        #       file_path = os.path.join(settings.MEDIA_ROOT, content.filepath)
-        #      if os.path.exists(file_path):
-        #         with open(file_path, 'rb') as pdf_file:
-        #            pdf = FileResponse(pdf_file, content_type='application/pdf')
-        #            contents_pdf[content.id] = pdf
-        # print(contents)
+        try:
+            courseProgress = CourseProgress.objects.get(enrollment=enrollment, course_content=coursecontent)
+        except CourseProgress.DoesNotExist:
+            courseProgress = None
         context = {
             'student_name': user_profile.user.username,
             'course': course,
             'sections': sections,
+            'coursecontent': coursecontent,
+            'courseProgress': courseProgress,
+            'progress': progress,
         }
         return render(request, 'course_navigation.html', context)
+    
+    def post(self, request, courseid, coursecontentid):
+        # user_profile = UserProfile.objects.get(user_id=request.user.id)
+        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
 
+        course_content= get_object_or_404(CourseContent, id=coursecontentid)
+
+        CourseProgress.objects.get_or_create(
+            enrollment=enrollment,
+            course_content=course_content,
+            status=True,
+        )
+        return redirect('course_navigation_content', courseid=courseid, coursecontentid=coursecontentid)
 
 class CourseContentFileView(View):
     def get(self, request, coursecontentid):
@@ -400,6 +435,7 @@ class CourseContentFileView(View):
 
 class Payment(View):
     def get(self, request):
+        print('Insdie payment view')
         membership_selected = request.GET.get('membership_selected')
         user_profile = UserProfile.objects.get(user=request.user)
         existing_membership = user_profile.membership.name
@@ -415,20 +451,21 @@ class Payment(View):
         response = render(request, 'payment.html',
                           {'membership_selected': membership_selected, 'existing_membership': existing_membership})
         response.set_cookie('membership_selected', membership_selected, max_age=60)
-        response.set_cookie('existing_membership', existing_membership, max_age=60)
+        # response.set_cookie('existing_membership', existing_membership, max_age=60)
         # response.set_cookie('existing_membership', existing_membership, max_age=60)
         return response
 
     def post(self, request):
-        membership_name = str(request.COOKIES.get('membership_selected')).lower()
-        print(membership_name)
-        existing_membership = request.COOKIES.get('existing_membership')
-        print(existing_membership)
+        membership_name = request.COOKIES.get('membership_selected')
+        print(f"existing_membership form cookie is : {membership_name}")
+        if membership_name is None:
+            membership_name = request.GET.get('membership_selected')
+            print(f"membership selected  form GET is : {membership_name}")
         # existing_membership = request.COOKIES.get('existing_membership')
         user_profile = get_object_or_404(UserProfile, user=request.user)
-        existing_membership = Membership.objects.get(name=membership_name)
-        print(existing_membership)
+        existing_membership = user_profile.membership
+        print(f"existing_membership from dB is : {existing_membership}")
 
-        user_profile.membership = Membership.objects.get(name=membership_name)
+        user_profile.membership = Membership.objects.get(name=existing_membership.name)
         user_profile.save()
         return redirect('profile')
