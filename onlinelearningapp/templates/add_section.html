@@ -1,26 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Course Detail</title>
-</head>
-<body>
-    <h1>
-        <a href="{% url 'home'%}">Courses</a> >
-        <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a> >
-        New Section
-    </h1>
-    <form method="post">
-        {% csrf_token %}
-        <input type="hidden" name="course_id" value="{{ course.id }}">
-        <div>
-            <label for="name">Name:</label>
-            <input type="text" id="name" name="name">
-        </div>
-        <div>
-            <label for="description">Description:</label>
-            <textarea id="description" name="description"></textarea>
-        </div>
-        <input type="submit" value="Save">
-    </form>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Course Detail
+{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-row align-items-center">
+    <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
+    <a href="{% url 'course_detail' course.id %}" class="fs-2">{{ course.name }}</a> <span
+        class="fs-2 mx-2">></span>
+    <span class="fs-2 fw-bold">New Section</span>
+</div>
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="course_id" value="{{ course.id }}">
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name">
+    </div>
+    <div>
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"></textarea>
+    </div>
+    <input type="submit" value="Save">
+</form>
+{% endblock %}

@@ -1,3 +1,5 @@
+import os
+
 import pdfkit
 
 options = {
@@ -14,7 +16,8 @@ options = {
     "javascript-delay": "1000",
     "log-level": "error"
 }
-path_to_wkhtmltopdf = '/path/to/wkhtmltopdf'
+path_to_wkhtmltopdf = os.getcwd() + os.sep + '../wkhtmltox/bin/wkhtmltopdf.exe'
+
 
 def generate_pdf(studentName, dateStr, instructorName, pdfFilePath):
     html = '''
@@ -88,11 +91,10 @@ def generate_pdf(studentName, dateStr, instructorName, pdfFilePath):
     html = html.replace("[Student Name]", studentName).replace("[Completion Date]", dateStr).replace(
         "[Instructor Name]", instructorName)
     try:
-        pdfkit.from_string(html, pdfFilePath)
+        pdfkit.from_string(html, pdfFilePath, configuration=pdfkit.configuration(wkhtmltopdf=path_to_wkhtmltopdf))
     except Exception as e:
         print(e)
         return False
     return True
 
-
-generate_pdf('Azhar Syed', 'July 21, 2023', 'Dr. Azanm Yacoub', 'azhar_syed_course1.pdf')
+# generate_pdf('Azhar Syed', 'July 21, 2023', 'Dr. Azanm Yacoub', 'azhar_syed_course1.pdf')

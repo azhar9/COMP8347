@@ -1,8 +1,10 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}
 Course Detail
 {% endblock %}
+
 {% block content %}
 <div class="p-4">
     {% if user_profile.role.name == 'student' %}
@@ -36,6 +38,10 @@ Course Detail
 
     <div>
         {% if user_profile.role.name == 'teacher' %}
+        <div class="d-flex flex-row align-items-center">
+            <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
+            <span class="fs-2 fw-bold">{{ course.name }}</span>
+        </div>
         <form method="post">
             {% csrf_token %}
             {% if course.published == False %}

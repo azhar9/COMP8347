@@ -15,7 +15,7 @@
             <a href="{% url 'home' %}"><img src="{% static 'images/Eduhub-4 2.png' %}" class="home-page-logo"></a>
         </div>
         <div class="fs-2 fw-bold">
-            Hello, {{ student_name }}
+            Hello, {{ user_profile.user.username }}
         </div>
     </div>
     <div class="d-flex flex-row align-items-center col-md-6 justify-content-end">
