@@ -1,31 +1,46 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Course Detail</title>
-</head>
-<body>
-    <h1>
-        <a href="{% url 'home'%}">Courses</a> >
-        <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a> >
-        {{ section.name }}
-    </h1>
-    
-    <h2></h2>
-    <p><strong>Section Name:</strong> {{ section.name }}</p>
-    <p><strong>Description:</strong> {{ section.description }}</p>
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Change Membership
+{% endblock %}
 
-    <h2>Section Contents</h2>
-    {% if contents %}
-        <ul>
+{% block content %}
+<div>
+    <div class="d-flex flex-row align-items-center">
+        <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
+        <a href="{% url 'course_detail' course.id %}" class="fs-2">{{ course.name }}</a> <span
+            class="fs-2 mx-2">></span>
+        <span class="fs-2 fw-bold">{{ section.name }}</span>
+    </div>
+    <div class="background-white p-4 rounded-4 shadow mt-4">
+        <div class="fw-bold fs-4">{{ section.name }}</div>
+        <div class="mt-4 fs-5">
+            {{ section.description }}
+        </div>
+    </div>
+
+    <div class="background-white rounded-4 shadow mt-4 pb-4">
+        <div class="fw-bold fs-4 p-4">Topics under: {{ section.name }}</div>
+        {% if contents %}
+        <div>
             {% for content in contents %}
-                <li>{{ content.name }}</li>
+            <div class="border-bottom py-2 px-4 d-flex flex-row align-items-center justify-content-between">
+                {{ content.name }}
+                <img src="{% static 'images/RightArrow.png' %}" class="right-arrow">
+            </div>
             {% endfor %}
-        </ul>
-    {% else %}
+        </div>
+        {% else %}
         <p>No contents found</p>
+        {% endif %}
+    </div>
+
+    {% if role == 'teacher' %}
+    <div class="d-flex flex-row justify-content-center">
+        <a href="{% url 'add_content' courseid=course.id sectionid=section.id %}">
+            <button class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-5 fs-5">Add Content</button>
+        </a>
+    </div>
     {% endif %}
-    {%  if role == 'teacher' %}
-    <a href="{% url 'add_content' courseid=course.id sectionid=section.id %}"><button>Add Content</button></a>
-    {% endif %}
-</body>
-</html>
+</div>
+{% endblock %}

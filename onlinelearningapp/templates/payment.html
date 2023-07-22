@@ -1,35 +1,63 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block title %}
 Payment
 {% endblock %}
 
 {% block content %}
 
-    <!-- Show payment page -->
-    <h2>Payments :Membership upgrade </h2>
-    <!-- Include payment form or relevant content -->
-    <!-- Example: -->
-    <form method="post" action="{% url 'payment' %}">
+<div class="d-flex h-100 flex-column align-items-center">
+    <div class="fs-4 fw-bold text-center">If You want to upgrade your membership to
+        <strong> {{ membership_selected }} </strong>
+        from <strong> {{ existing_membership }} </strong>. Please start with the subscription steps below.
+    </div>
+    <form method="post" action="{% url 'payment' %}"
+          class="background-white p-4 rounded-4 d-flex flex-column align-items-center mt-5" style="width: 450px;">
         {% csrf_token %}
-        <!-- Payment form fields -->
-        <!-- Example: -->
-        <p>If You want to upgrade your membership to <strong> {{ membership_selected }} </strong>  from  <strong> {{ existing_membership }}  </strong> .Please do the payment
-        <p>   <br>
-        {{ membership_selected | upper }} <br><br>
-        <p> You have to pay only once and start using our enhanced course materials</p>
-        <h1>Card Details Information</h1>
-        <label for="owner">Owner Name:</label>
-        <input type="text" id="owner" name="name" required><br><br>
-        <label for="card_number">Credit/Debit Card Number:</label>
-        <input type="text" id="card_number" name="card_number" maxlength="16" placeholder="xxxx-xxxx-xxxx-xxxx" required>
-        <br><br><br>
-        <label for="expiry_date">Expiry Date:</label>
-        <input type="date" id="expiry_date" name="expiry_date" required>
-        <br><br><br>
-        <label for="cvv">Cvv:</label>
-        <input type="input" id="cvv" name="cvv" required maxlength="4" width="1">
-        <button type="submit">Make Payment</button>
+        <div class="fs-4 fw-bold">{{ existing_membership|capfirst }}</div>
+        <div class="fw-bold">You have to pay only once, and then you can start using our services.</div>
+        <div class="mt-4">
+            <div class="row">
+                <div class="col-8 text-left fw-bold">Silver membership price:</div>
+                <div class="col-4 fw-bold">$100.00</div>
+            </div>
+            <div class="row">
+                <div class="col-8 fw-bold">PST:</div>
+                <div class="col-4 fw-bold">$5.00</div>
+            </div>
+            <div class="row">
+                <div class="col-8 fw-bold">GST:</div>
+                <div class="col-4 fw-bold">$8.00</div>
+            </div>
+            <div class="row">
+                <div class="col-8 fw-bold">Total tax:</div>
+                <div class="col-4 fw-bold">$13.00</div>
+            </div>
+            <div class="row">
+                <div class="col-8 fw-bold">Total Price:</div>
+                <div class="col-4 fw-bold">$113.00</div>
+            </div>
+
+        </div>
+        <div class="fs-4 fw-bold mt-5 mb-3">Card Detail Information</div>
+        <div class="w-100">
+            <label for="owner" class="fw-bold">Owner Name:</label>
+            <input type="text" id="owner" name="name" required class="form-control">
+            <label for="card_number" class="fw-bold mt-3">Credit/Debit Card Number:</label>
+            <input type="text" id="card_number" name="card_number" maxlength="16" placeholder="xxxx-xxxx-xxxx-xxxx"
+                   class="form-control form-control-lg"
+                   required>
+
+            <label for="expiry_date" class="fw-bold mt-3">Expiry Date:</label>
+            <input type="date" id="expiry_date" name="expiry_date" class="form-control" required>
+
+            <label for="cvv" class="fw-bold mt-3">Cvv:</label>
+            <input type="input" id="cvv" name="cvv" required maxlength="4" width="1"
+                   class="form-control">
+        </div>
+        <button type="submit" class="btn rounded-pill px-5 py-1 btn-color-success mt-3 fs-5">Make Payment</button>
     </form>
+</div>
+
 {% endblock %}
 </html>
