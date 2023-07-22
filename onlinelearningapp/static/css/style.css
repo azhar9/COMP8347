@@ -4,7 +4,8 @@ html {
 
 body {
   min-height: 100%;
-  background: linear-gradient(180deg, #B2DFFF 0%, rgba(167, 102, 206, 0.00) 99.99%, rgba(177, 51, 255, 0.00) 100%);
+  background: linear-gradient(180deg, #B2DFFF 0%, rgba(167, 102, 206, 0.20) 50%, rgba(177, 51, 255, 0.00) 100%);
+  background-attachment: fixed !important;
 }
 
 a {
@@ -57,4 +58,8 @@ a {
 .right-arrow {
     width: 5px;
     height: 10px;
+}
+
+.text-color-black {
+    color: black;
 }

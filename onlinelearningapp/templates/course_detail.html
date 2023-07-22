@@ -5,59 +5,64 @@ Course Detail
 {% endblock %}
 {% block content %}
 <div class="p-4">
-{% if user_profile.role.name == 'student' %}
-<div class="unregistered-course-information-banner w-100 p-4 rounded-4 d-flex flex-column align-items-center"
-     style="background: white;">
-    <div class="unregistered-course-information-banner-title">{{ course.name }}</div>
-    <div class="unregistered-course-information-banner-body d-flex my-4">
-        <div class="unregistered-course-information-banner-body-profile d-flex flex-column align-items-center me-4">
-            <div class="unregistered-course-information-banner-body-profile-pic">
-                <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
+    {% if user_profile.role.name == 'student' %}
+    <div class="unregistered-course-information-banner w-100 p-4 rounded-4 d-flex flex-column align-items-center"
+         style="background: white;">
+        <div class="unregistered-course-information-banner-title">{{ course.name }}</div>
+        <div class="unregistered-course-information-banner-body d-flex my-4">
+            <div class="unregistered-course-information-banner-body-profile d-flex flex-column align-items-center me-4">
+                <div class="unregistered-course-information-banner-body-profile-pic">
+                    <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="">
+                </div>
+                <div class="unregistered-course-information-banner-body-profile-name">
+                    {{ course.instructor }}
+                </div>
             </div>
-            <div class="unregistered-course-information-banner-body-profile-name">
-                {{ course.instructor }}
+            <div class="unregistered-course-information-banner-description">
+                {{ course.description }}
             </div>
         </div>
-        <div class="unregistered-course-information-banner-description">
-            {{ course.description }}
-        </div>
-    </div>
-    {% if not enrollments %}
-    <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"
-           class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
-    {% else %}
-    <input type="button" onclick="location.href='{% url 'course_navigation' courseid=course.id%}'" value="Continue"
-           class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
-    <input type="button" onclick="location.href='/dropCourse.do?courseId={{ course.id }}'" value="Drop"
-           class="btn-color-primary btn rounded-pill px-5 py-2 me-3 my-2">
-    {% endif %}
-</div>
-{% endif %}
-
-<div>
-    {% if user_profile.role.name == 'teacher' %}
-    <form method="post">
-        {% csrf_token %}
-        {% if course.published == False %}
-        <input type="submit" name="publish" value="Publish">
+        {% if not enrollments %}
+        <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"
+               class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
+        {% else %}
+        <input type="button" onclick="location.href='{% url 'course_navigation' courseid=course.id%}'" value="Continue"
+               class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
+        <input type="button" onclick="location.href='/dropCourse.do?courseId={{ course.id }}'" value="Drop"
+               class="btn-color-primary btn rounded-pill px-5 py-2 me-3 my-2">
         {% endif %}
-    </form>
-    <div><strong>Course Overview: </strong> {{ course.description }}</div>
-    <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>
-    <div><strong>Published:</strong> {{ course.published }}</div>
-    <h2>Course Sections:</h2>
-    {% for section in sections %}
-    <div>
-        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{
-            section.name }}</a>
     </div>
-    {% empty %}
-    <p>No contents found</p>
-    {% endfor %}
-
-    <a href="{% url 'add_section' courseid=course.id %}">
-        <button>Add Section</button>
-    </a>
     {% endif %}
-</div>
-{% endblock %}
+
+    <div>
+        {% if user_profile.role.name == 'teacher' %}
+        <form method="post">
+            {% csrf_token %}
+            {% if course.published == False %}
+            <input type="submit" name="publish" value="Publish">
+            {% endif %}
+        </form>
+        <div class="background-white p-4 rounded-4 shadow">
+            <div class="fw-bold fs-4">Course Overview:</div>
+            <div class="mt-4 fs-5">
+                {{ course.description }}
+            </div>
+        </div>
+        <div><strong>Membership Required:</strong> {{ course.membership_level_required.name }}</div>
+        <div><strong>Published:</strong> {{ course.published }}</div>
+        <h2>Course Sections:</h2>
+        {% for section in sections %}
+        <div>
+            <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=user_profile.role.name %}">{{
+                section.name }}</a>
+        </div>
+        {% empty %}
+        <p>No contents found</p>
+        {% endfor %}
+
+        <a href="{% url 'add_section' courseid=course.id %}">
+            <button>Add Section</button>
+        </a>
+        {% endif %}
+    </div>
+    {% endblock %}
