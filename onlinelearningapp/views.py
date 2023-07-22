@@ -355,6 +355,12 @@ class CourseDetailView(View):
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         print(user_profile.membership.name)
+        courseEnrollmentsCounter = 0
+        try:
+            courseEnrollmentsCounter = len(Enrollment.objects.filter(course_id=courseid))
+        except:
+            pass
+
         try:
             enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
         except Enrollment.DoesNotExist:
@@ -365,6 +371,7 @@ class CourseDetailView(View):
             'sections': sections,
             'user_profile': user_profile,
             'enrollments': enrollments,
+            'courseEnrollements': courseEnrollmentsCounter
         }
         print(context)
         return render(request, 'course_detail.html', context)
