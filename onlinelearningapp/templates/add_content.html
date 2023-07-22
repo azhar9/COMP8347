@@ -1,9 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Course Content</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+Add Course Content
+{% endblock %}
+
+{% block content %}
     <h1>
         <a href="{% url 'home'%}">Courses</a> >
         <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a> >
@@ -30,23 +32,24 @@
         </div>
         <input type="submit" value="Save">
     </form>
-</body>
-<script>
-    function updateFileAccept() {
-      var contentSelect = document.getElementById('content_type');
-      var fileInput = document.getElementById('file');
-      var fileInputDiv = document.getElementById('fileInputDiv');
-  
-      // Get the selected option
-      var selectedOption = contentSelect.options[contentSelect.selectedIndex].value;
-  
-      // Update the accept attribute based on the selected option
-      if (selectedOption === 'pdf') {
-        fileInput.accept = '.pdf';
-        fileInputDiv.style.display = 'block';
-      } else {
-        fileInputDiv.style.display = 'none';
-      }
-    }
-  </script>
-</html>
+{% endblock %}
+{% block script %}
+    <script>
+        function updateFileAccept() {
+        var contentSelect = document.getElementById('content_type');
+        var fileInput = document.getElementById('file');
+        var fileInputDiv = document.getElementById('fileInputDiv');
+    
+        // Get the selected option
+        var selectedOption = contentSelect.options[contentSelect.selectedIndex].value;
+    
+        // Update the accept attribute based on the selected option
+        if (selectedOption === 'pdf') {
+            fileInput.accept = '.pdf';
+            fileInputDiv.style.display = 'block';
+        } else {
+            fileInputDiv.style.display = 'none';
+        }
+        }
+    </script>
+{% endblock %}

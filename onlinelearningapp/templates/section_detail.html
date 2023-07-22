@@ -1,11 +1,17 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}
-Change Membership
+Section Detail
 {% endblock %}
 
 {% block content %}
 <div>
+    <h1>
+        <a href="{% url 'home'%}">Courses</a> >
+        <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a> >
+        {{ section.name }}
+    </h1>
     <div class="d-flex flex-row align-items-center">
         <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
         <a href="{% url 'course_detail' course.id %}" class="fs-2">{{ course.name }}</a> <span

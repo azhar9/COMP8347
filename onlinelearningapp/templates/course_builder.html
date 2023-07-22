@@ -1,3 +1,11 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+New Course
+{% endblock %}
+
+{% block content %}
 
 <form method="POST" action="{% url 'create_course' %}">
     {% csrf_token %}
@@ -22,3 +30,5 @@
     <!-- Submit button -->
     <input type="submit" value="Create Course">
   </form>
+
+{% endblock %}

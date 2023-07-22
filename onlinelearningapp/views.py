@@ -124,7 +124,7 @@ def enrollCourse(request):
     except Enrollment.DoesNotExist:
         print("Inside Does notExist error")
         context = {
-            'student_name': user_profile.user.username,
+            'user_profile': user_profile,
             'membership_selected': course_details.membership_level_required.name,
             'existing_membership': user_profile.membership.name
         }
@@ -153,7 +153,10 @@ class HomeView(View):
             # teacher home page
             courses_per_instructor = Course.objects.filter(instructor=request.user.id)
             print(request.user.id)
-            context = {'course_list': courses_per_instructor}
+            context = {
+                'course_list': courses_per_instructor,
+                'user_profile': user_profile,
+                }
             return render(request, 'home_teacher.html', context)
         else:
             enrollments = Enrollment.objects.filter(student_id=request.user.id)   
@@ -174,7 +177,8 @@ class HomeView(View):
                     silver_courses.append(course)
                 if course.membership_level_required.name == "gold":
                     gold_courses.append(course)
-            context = {'student_name': user_profile.user.username,
+            context = {
+                       'user_profile': user_profile,
                        'bronze_courses': bronze_courses,
                        'silver_courses': silver_courses,
                        'gold_courses': gold_courses,
@@ -198,7 +202,6 @@ class ChangeMembership(View):
         user_profile = UserProfile.objects.get(user=request.user)
         context = {
             'user_profile': user_profile,
-            'student_name': user_profile.user.username
         }
         return render(request, 'change_membership.html', context)
 
@@ -214,8 +217,13 @@ class CourseView(View):
     template_name = 'course_builder.html'
 
     def get(self, request):
+        user_profile = UserProfile.objects.get(user=request.user)
         course_list = Course.objects.filter(instructor_id=request.user.id)
-        context = {'course_list': course_list}
+
+        context = {
+            'course_list': course_list,
+            'user_profile': user_profile,
+        }
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -256,7 +264,6 @@ class CourseDetailView(View):
             'sections': sections,
             'user_profile': user_profile,
             'enrollments': enrollments,
-            'student_name': user_profile.user.username
         }
         print(context)
         return render(request, 'course_detail.html', context)
@@ -300,6 +307,7 @@ class AddSectionView(View):
 class SectionView(View):
     def get(self, request, courseid, sectionid, role):
         print('hi', courseid, sectionid)
+        user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
         section = get_object_or_404(Section, id=sectionid)
         contents = CourseContent.objects.filter(section=section)
@@ -307,32 +315,38 @@ class SectionView(View):
             'section': section,
             'course': course,
             'contents': contents,
-            'role': role
+            'role': role,
+            'user_profile': user_profile
+
         }
         return render(request, 'section_detail.html', context)
 
 
 class CourseContentView(View):
     def get(self, request, courseid, sectionid, coursecontentid):
+        user_profile = UserProfile.objects.get(user_id=request.user.id)
         section = get_object_or_404(Section, id=sectionid)
         course = get_object_or_404(Course, id=courseid)
         coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
         context = {
             'section': section,
             'course': course,
-            'coursecontent': coursecontent
+            'coursecontent': coursecontent,
+            'user_profile': user_profile,
         }
         return render(request, 'section_detail.html', context)
 
 
 class AddContentView(View):
     def get(self, request, courseid, sectionid):
+        user_profile = UserProfile.objects.get(user_id=request.user.id)
         section = get_object_or_404(Section, id=sectionid)
         course = get_object_or_404(Course, id=courseid)
         context = {
             'section': section,
             'course': course,
-            'role': 'teacher'
+            'role': 'teacher',
+            'user_profile': user_profile,
         }
         return render(request, 'add_content.html', context)
 
@@ -350,7 +364,7 @@ class AddContentView(View):
         course_content = CourseContent.objects.create(
             section=section,
             name=name,
-            order=order + 1,  # Set the filepath field
+            order=order + 1,
             filepath=content_file,
             content_type=content_type,
         )
@@ -391,7 +405,7 @@ class CourseNavigationView(View):
         except CourseProgress.DoesNotExist:
             courseProgress = None
         context = {
-            'student_name': user_profile.user.username,
+            'user_profile': user_profile,
             'course': course,
             'sections': sections,
             'coursecontent': coursecontent,
@@ -447,9 +461,12 @@ class Payment(View):
             user_profile.membership = Membership.objects.get(name=membership_selected)
             user_profile.save()
             return redirect('profile')
-
-        response = render(request, 'payment.html',
-                          {'membership_selected': membership_selected, 'existing_membership': existing_membership})
+        context = {
+            'membership_selected': membership_selected,
+            'existing_membership': existing_membership,
+            'user_profile': user_profile,
+            }
+        response = render(request, 'payment.html', context)
         response.set_cookie('membership_selected', membership_selected, max_age=60)
         # response.set_cookie('existing_membership', existing_membership, max_age=60)
         # response.set_cookie('existing_membership', existing_membership, max_age=60)
