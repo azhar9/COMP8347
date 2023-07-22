@@ -10,12 +10,12 @@ User Profile
         <ul>
             <p class="capitalize fs-3">User Name: {{ user_profile.user.username | capfirst }}</p>
             <p class="capitalize fs-3">{{ user_profile.role | capfirst }}</p>
-            {% if user_profile.role == 'student' %}
+            {% if user_profile.role.name == 'student' %}
             <p class="capitalize fs-3">Membership Details : {{ user_profile.membership.name | capfirst  }}</p>
             {% endif %}
         </ul>
-          {% if user_profile.role == 'student' %}
-        <input type="button" value="Change Membership" onclick="location.href='/changeMembership'" class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-5 fs-5">
+          {% if user_profile.role.name == 'student' %}
+            <input type="button" value="Change Membership" onclick="location.href='/changeMembership'" class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-5 fs-5">
           {% endif %}
     </div>
 </div>
