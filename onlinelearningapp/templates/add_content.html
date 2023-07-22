@@ -6,12 +6,14 @@ Add Course Content
 {% endblock %}
 
 {% block content %}
-    <h1>
-        <a href="{% url 'home'%}">Courses</a> >
-        <a href="{% url 'course_detail' course.id %}">{{ course.name }}</a> >
-        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=role %}" >{{ section.name }}</a> >
-        New Content
-    </h1>
+    <div class="d-flex flex-row align-items-center">
+        <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
+        <a href="{% url 'course_detail' course.id %}" class="fs-2">{{ course.name }}</a> <span
+            class="fs-2 mx-2">></span>
+        <a href="{% url 'section_detail' courseid=course.id sectionid=section.id role=role %}" class="fs-2">{{ section.name }}</a> <span
+            class="fs-2 mx-2">></span>
+        <span class="fs-2 fw-bold">New Content</span>
+    </div>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="hidden" name="role" value="{{ role }}"/>
