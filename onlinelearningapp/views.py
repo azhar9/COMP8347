@@ -363,7 +363,7 @@ class AddContentView(View):
 
 
 class CourseNavigationView(View):
-    def get(self, request, courseid):
+    def get(self, request, courseid, coursecontentid=None):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
         section_list = course.section_set.all().order_by('order')
@@ -373,6 +373,19 @@ class CourseNavigationView(View):
         sections = OrderedDict()
         for sect in section_list:
             sections[sect.name] = list(sect.coursecontent_set.all())
+
+        # if contentid is not specified, then redirect to the first content in first section
+        if coursecontentid is None:
+            section = next(iter(sections.values()))
+            content = section[0]
+            return redirect('course_navigation_content', courseid=courseid, coursecontentid=content.id)
+
+        coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
+        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
+        try:
+            courseProgress = CourseProgress.objects.get(enrollment=enrollment, course_content=coursecontent)
+        except CourseProgress.DoesNotExist:
+            courseProgress = None
 
         for key in sections.keys():
             print(sections[key])
@@ -390,9 +403,23 @@ class CourseNavigationView(View):
             'student_name': user_profile.user.username,
             'course': course,
             'sections': sections,
+            'coursecontent': coursecontent,
+            'courseProgress': courseProgress
         }
         return render(request, 'course_navigation.html', context)
+    
+    def post(self, request, courseid, coursecontentid):
+        # user_profile = UserProfile.objects.get(user_id=request.user.id)
+        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
 
+        course_content= get_object_or_404(CourseContent, id=coursecontentid)
+
+        CourseProgress.objects.get_or_create(
+            enrollment=enrollment,
+            course_content=course_content,
+            status=True,
+        )
+        return redirect('course_navigation_content', courseid=courseid, coursecontentid=coursecontentid)
 
 class CourseContentFileView(View):
     def get(self, request, coursecontentid):
