@@ -13,4 +13,4 @@ __pycache__/
 *.pyc
 passwords.txt
 db.sqlite3
-*.pdf
+
