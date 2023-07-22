@@ -36,4 +36,7 @@ Student Home
         {% endfor %}
     </div>
 </div>
+<script>
+    console.log("{% for enrollment in enrollments %} {{ enrollment.progress }} {% endfor %}")
+</script>
 {% endblock %}

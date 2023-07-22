@@ -154,6 +154,7 @@ class HomeView(View):
             courses_per_instructor = Course.objects.filter(instructor=request.user.id)
             print(request.user.id)
             context = {'course_list': courses_per_instructor}
+            context = {'course_list': course_list}
             return render(request, 'home_teacher.html', context)
         else:
             enrollments = Enrollment.objects.filter(student_id=request.user.id)
@@ -163,6 +164,14 @@ class HomeView(View):
                 course_progress_ids = CourseProgress.objects.filter(course_content_id__in=section_ids,
                                                                     status=True).values_list('id', flat=True)
                 progress = len(course_progress_ids)
+
+            
+            for enrollment in enrollments:
+                course_progress_count = CourseProgress.objects.filter(enrollment=enrollment, status=True).count()
+                course_contents_count = CourseContent.objects.filter(section__course_id=enrollment.course.id).count()
+                enrollment.progress = 100
+                if course_contents_count is not 0:
+                    enrollment.progress = int((course_progress_count / course_contents_count) * 100)
 
             bronze_courses = []
             silver_courses = []
@@ -179,9 +188,6 @@ class HomeView(View):
                        'silver_courses': silver_courses,
                        'gold_courses': gold_courses,
                        'enrollments': enrollments,
-                       'total': total,
-                       'progress': progress,
-                       'progress_percentage': ceil((progress / total) * 100)
                        }
             return render(request, 'home_student.html', context)
 
@@ -245,7 +251,6 @@ class CourseView(View):
 class CourseDetailView(View):
     def get(self, request, courseid):
         # TODO: get an object here with section and their respective content
-        # print(courseid)
         course = get_object_or_404(Course, id=courseid)
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
@@ -373,38 +378,34 @@ class CourseNavigationView(View):
         sections = OrderedDict()
         for sect in section_list:
             sections[sect.name] = list(sect.coursecontent_set.all())
-
+            
         # if contentid is not specified, then redirect to the first content in first section
         if coursecontentid is None:
+            # TODO: skip to first non-complete content instead of always taking first. If all contents are complete, display download certi page
             section = next(iter(sections.values()))
             content = section[0]
             return redirect('course_navigation_content', courseid=courseid, coursecontentid=content.id)
 
         coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
         enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
+        
+        course_progress_count = CourseProgress.objects.filter(enrollment=enrollment, status=True).count()
+        course_contents_count = CourseContent.objects.filter(section__course_id=enrollment.course.id).count()
+        progress = 100
+        if course_contents_count is not 0:
+            progress = int((course_progress_count / course_contents_count) * 100)
+
         try:
             courseProgress = CourseProgress.objects.get(enrollment=enrollment, course_content=coursecontent)
         except CourseProgress.DoesNotExist:
             courseProgress = None
-
-        for key in sections.keys():
-            print(sections[key])
-
-        # contents = CourseContent.objects.filter(section__id__in=section_ids).order_by('order')
-
-        #  for content in contents:
-        #       file_path = os.path.join(settings.MEDIA_ROOT, content.filepath)
-        #      if os.path.exists(file_path):
-        #         with open(file_path, 'rb') as pdf_file:
-        #            pdf = FileResponse(pdf_file, content_type='application/pdf')
-        #            contents_pdf[content.id] = pdf
-        # print(contents)
         context = {
             'student_name': user_profile.user.username,
             'course': course,
             'sections': sections,
             'coursecontent': coursecontent,
-            'courseProgress': courseProgress
+            'courseProgress': courseProgress,
+            'progress': progress,
         }
         return render(request, 'course_navigation.html', context)
     
