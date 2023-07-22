@@ -9,11 +9,8 @@
             </div>
         </div>
         {% if enrollment.progress is 100 %}
-        <form method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-sm rounded-pill btn-color-success px-3 mt-2 w-100">Download Certificate
-            </button>
-        </form>
+        <a href="{% url 'download_certificate' enrollment.course.id %}" download
+           class="btn btn-sm rounded-pill btn-color-success px-3 mt-2">Download certificate</a>
         {% endif %}
         <a href="{% url 'course_navigation' enrollment.course.id %}"
            class="btn btn-sm rounded-pill btn-color-success px-3 mt-2">continue learning</a>
