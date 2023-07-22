@@ -355,23 +355,16 @@ class CourseDetailView(View):
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         print(user_profile.membership.name)
-
-        enrollments_count = 0
         try:
             enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
         except Enrollment.DoesNotExist:
             enrollments = None
-
-        if user_profile.role.name == "teacher":
-            enrollments_count = Enrollment.objects.filter(course_id=courseid).count()
-
         sections = Section.objects.filter(course=course)
         context = {
             'course': course,
             'sections': sections,
             'user_profile': user_profile,
             'enrollments': enrollments,
-            'total_enrolled': enrollments_count
         }
         print(context)
         return render(request, 'course_detail.html', context)
