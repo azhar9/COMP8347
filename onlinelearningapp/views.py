@@ -410,7 +410,10 @@ class CourseDetailView(View):
 
     def post(self, request, courseid):
         course = get_object_or_404(Course, id=courseid)
-        course.published = True
+        if request.POST.get('publish').lower() == 'publish':
+            course.published = True
+        else:
+            course.published = False
         course.save()
         return redirect('course_detail', courseid=courseid)
 

@@ -25,6 +25,11 @@ a {
     color: white;
 }
 
+.btn-color-unpublish {
+    background: #000000 !important;
+    color: white;
+}
+
 .btn-color-secondary {
     background: #898A86;
     color: white;
