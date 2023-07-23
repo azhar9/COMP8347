@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Course Completion Certificate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+        }
+        .certificate {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            border: 2px solid #333;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+        }
+        .certificate-title {
+            font-size: 34px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 8px;
+        }
+        .certificate-content {
+            font-size: 32px;
+            margin-top: 8px;
+            text-align: center;
+        }
+        .completion-date {
+            font-size: 32px;
+            text-align: center;
+        }
+        .signature {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .instructor-name {
+            font-size: 32px;
+            margin-top: 8px;
+            text-align: center;
+        }
+        .register-logo {
+            width: 300px;
+        }
+        .logo-container {
+            text-align: center;
+            width: 100%;
+        }
+        .stamp-container {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+        }
+        .stamp {
+            width: 150px;
+        }
+    </style>
+</head>
+<body>
+<div class="certificate">
+    <div class="logo-container">
+        <img src="{imageUrl}" class="register-logo">
+    </div>
+    <div class="certificate-title">{courseName}</div>
+    <div class="certificate-content">Completed by {studentName}</div>
+    <div class="completion-date">{dateStr}</div>
+    <div class="signature">Authorized Signature</div>
+    <div class="instructor-name">{instructorName}</div>
+    <div class="stamp-container">
+        <img src="{stampUrl}" class="stamp">
+    </div>
+</div>
+</body>
+</html>

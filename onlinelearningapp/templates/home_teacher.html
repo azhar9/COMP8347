@@ -7,6 +7,21 @@ Teacher Home
 
 
 <div class="row justify-content-around">
+    {% if not course_list %}
+    <div class="col-1"></div>
+    <div class="col-10">
+        <div class="fs-5 fw-bold background-white p-5 my-2 rounded-3 d-flex flex-row justify-content-between align-items-center d-flex flex-column">
+            Welcome to our learning platform - a world of knowledge awaits your expertise!
+            Share your brilliance with students worldwide by easily uploading your content as PDFs. Unleash the power of
+            education and make a lasting impact.
+            Get started today and be a part of shaping the future, one lesson at a time!
+            <a href="{% url 'create_course' %}">
+                <button class="btn rounded-pill px-5 py-1 btn-color-primary mt-3 fs-5">Start Now</button>
+            </a>
+        </div>
+    </div>
+    <div class="col-1"></div>
+    {% else %}
     <div class="col-4">
         <div class="fs-3 fw-bold">Your Course List</div>
         {% for course in course_list %}
@@ -25,6 +40,8 @@ Teacher Home
             </a>
         </div>
     </div>
+    {% endif %}
+
 </div>
 
 {% endblock %}

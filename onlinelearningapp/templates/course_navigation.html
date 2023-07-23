@@ -8,40 +8,70 @@ Course Navigator
 
 
 </style>
-<div class="fs-2 fw-bold d-flex justify-content-center">{{ course.name }}</div>
-<div class="d-flex  justify-content-around fs-3">{{progress}}% Completed</div>
-<div class="progress my-2">
-    <div class="progress-bar" role="progressbar" style="width: {{ progress }}%;" aria-valuenow="25" aria-valuemin="0"
-         aria-valuemax="100"></div>
-</div>
+{% if user_profile.role.name == 'student' %}
+    <div class="fs-2 fw-bold d-flex justify-content-center">{{ course.name }}</div>
+    <div class="d-flex  justify-content-around fs-3">{{progress}}% Completed</div>
+    <div class="progress my-2">
+        <div class="progress-bar" role="progressbar" style="width: {{ progress }}%;" aria-valuenow="25" aria-valuemin="0"
+            aria-valuemax="100"></div>
+    </div>
+{% else %}
+    <!-- teacher header -->
+    <div class="mb-2 fs-2 d-flex flex-row align-items-center">
+        <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
+        <a href="{% url 'course_detail' course.id %}" class="fs-2">{{ course.name }}</a> <span
+            class="fs-2 mx-2">></span>
+        <span class="fs-2 fw-bold">{{ section.name }}</span>
+    </div>
+    
+    <div class="background-white p-4 rounded-4 shadow">
+        <div class="fw-bold fs-4">{{ section.name }}</div>
+        <div class="mt-4 fs-5">
+            {{ course.description }}
+        </div>
+    </div>
+
+{% endif %}
+
 
 <div class="main-container my-4">
     <div class="d-flex px-2">
-        <div class="course-navigation rounded-4 w-25 me-2" style="background: white; min-height:100%; height:100%;">
-            <div>
-                {% for section, contents in sections.items %}
+        <div class="course-navigation rounded-4 w-25 me-2" style="min-height:100%; height:100%;">
+            <div class="rounded-4 mb-4" style="background: white;">
+                {% for section, contents in contents.items %}
                 <div>
-                    <div class="p-3 border-bottom fs-4 fw-bold">{{section}}</div>
+                    <div class="p-3 border-bottom fs-4 fw-bold">
+                        {% if user_profile.role.name == "student" %}
+                            {{ section }}
+                        {% else %}
+                            Section Topics
+                        {% endif %}
+                    </div>
                     <div class="mx-2 p-2 fs-5">
                         {% for content in contents %}
                         <div class="p-2">
                             <a href="{% url 'course_navigation_content' courseid=course.id coursecontentid=content.id %}"
                                class="d-flex flex-row align-items-center justify-content-between">
-                                {{ content.name }}
+                                {{ content.name }} {{ content.is_completed }}
                                 <img src="{% static 'images/RightArrow.png' %}" class="right-arrow">
                             </a>
                         </div>
-
                         {% endfor %}
                     </div>
                 </div>
                 {% endfor %}
             </div>
+            {% if user_profile.role.name == "teacher" %}
+                <div class="d-flex flex-row align-items-center justify-content-around">
+                    <a href="{% url 'add_content' courseid=course.id sectionid=section.id %}" 
+                        class="btn-color-primary btn rounded-pill px-5 py-2 me-3">Add Content</a>
+                </div>
+            {% endif %}
         </div>
 
         <div class="content rounded-4 ms-2 p-2 w-75" style="background: white;">
             <div class="pdf-viewer" id="pdf-viewer"></div>
-            {% if courseProgress.status is not True %}
+            {% if user_profile.role.name == 'student' and courseProgress.status is not True %}
             <div class="d-flex flex-column align-items-center mt-2">
                 <form method="post">
                     {% csrf_token %}

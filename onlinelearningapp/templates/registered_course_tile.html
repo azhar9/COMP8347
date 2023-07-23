@@ -1,5 +1,5 @@
-<div class="card border-0 rounded-3 mb-3 me-3 shadow-sm" style="width: 250px; cursor: pointer;">
-    <div class="card-body text-success g-0 d-flex flex-column">
+<div class="card border-0 rounded-3 mb-3 me-3 shadow" style="width: 250px; cursor: pointer;">
+    <div class="card-body text-success g-0 d-flex flex-column justify-content-between">
         <h5 class="card-title text-color-black">{{ enrollment.course.name }}</h5>
         <div class="card-text text-color-black">{{ enrollment.course.instructor }}</div>
         <div class="progress my-2">
@@ -13,6 +13,6 @@
            class="btn btn-sm rounded-pill btn-color-success px-3 mt-2">Download certificate</a>
         {% endif %}
         <a href="{% url 'course_navigation' enrollment.course.id %}"
-           class="btn btn-sm rounded-pill btn-color-success px-3 mt-2">continue learning</a>
+           class="btn btn-sm rounded-pill btn-color-success px-3 mt-2">Continue Learning</a>
     </div>
 </div>

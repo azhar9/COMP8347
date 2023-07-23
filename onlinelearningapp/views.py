@@ -1,7 +1,7 @@
 import os
 import uuid
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, date
 
 import pdfkit
 from django.contrib import messages
@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Q
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -21,104 +22,7 @@ from onlinelearning import settings
 from .models import Role, UserProfile, Course, Membership, Enrollment, Section, CourseContent, CourseProgress, \
     Certificate
 
-
-class PdfGen:
-    options = {
-        'page-size': 'A4',
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
-        'encoding': "UTF-8",
-        "enable-local-file-access": "",
-        "zoom": "1",
-        "load-error-handling": "ignore",
-        "load-media-error-handling": "ignore",
-        "javascript-delay": "1000",
-        "log-level": "error"
-    }
-    path_to_wkhtmltopdf = os.getcwd() + os.sep + '/wkhtmltox/bin/wkhtmltopdf.exe'
-
-    @staticmethod
-    def generate_pdf(studentName, dateStr, instructorName, courseName, pdfFilePath):
-        html = '''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Course Completion Certificate</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                }
-                .certificate {
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 30px;
-                    border: 2px solid #333;
-                }
-                .certificate-title {
-                    font-size: 24px;
-                    font-weight: bold;
-                    text-align: center;
-                }
-                .certificate-content {
-                    font-size: 18px;
-                    margin-top: 20px;
-                    text-align: center;
-                }
-                .student-name {
-                    font-size: 22px;
-                    font-weight: bold;
-                    margin-top: 40px;
-                    text-align: center;
-                }
-                .course-name {
-                    font-size: 20px;
-                    margin-top: 20px;
-                    text-align: center;
-                }
-                .completion-date {
-                    font-size: 18px;
-                    margin-top: 20px;
-                    text-align: center;
-                }
-                .signature {
-                    font-size: 18px;
-                    font-weight: bold;
-                    margin-top: 40px;
-                        text-align: center;
-                    }
-                    .instructor-name {
-                        font-size: 18px;
-                        margin-top: 10px;
-                        text-align: center;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="certificate">
-                    <div class="certificate-title">Certificate of Completion</div>
-                    <div class="certificate-content">This is to certify that</div>
-                    <div class="student-name">[Student Name]</div>
-                    <div class="course-name">has successfully completed the [courseName] course</div>
-                    <div class="completion-date">on [Completion Date]</div>
-                    <div class="signature">Authorized Signature</div>
-                    <div class="instructor-name">[Instructor Name]</div>
-                </div>
-            </body>
-            </html>
-            '''
-        html = html.replace("[Student Name]", studentName).replace("[Completion Date]", dateStr).replace(
-            "[Instructor Name]", instructorName).replace(
-            "[courseName]", courseName)
-        try:
-            pdfkit.from_string(html, pdfFilePath, options=PdfGen.options,
-                               configuration=pdfkit.configuration(wkhtmltopdf=PdfGen.path_to_wkhtmltopdf))
-        except Exception as e:
-            print(e)
-            return False
-        return True
+from .certificate import PdfGen
 
 
 class RegisterView(View):
@@ -130,7 +34,13 @@ class RegisterView(View):
         email = request.POST['email']
         password = request.POST['password']
         role = request.POST['role']
-
+        existing_user = User.objects.filter(Q(username=username) | Q(email=email)).first()
+        context = {"error": None}
+        if existing_user:
+            context = {
+                "error": "username or email already exists!"
+            }
+            return render(request, 'register.html', context=context)
         # Create a new User object
         user = User.objects.create_user(username=username, email=email, password=password)
 
@@ -141,7 +51,7 @@ class RegisterView(View):
         UserProfile.objects.create(user=user, role=role_obj)
         return redirect('home')  # Redirect to the home page after successful registration
 
-        return render(request, 'register.html')
+        return render(request, 'register.html', context=context)
 
 
 def login_view(request):
@@ -178,7 +88,7 @@ def forgot_password(request):
             print("reset_url", reset_url)
 
             # Render the email template with the reset URL
-            email_subject = 'Password reset OnlineLearning'
+            email_subject = 'Password reset Eduhub Online Learning'
             email_message = render_to_string('password_reset_email.html', {
                 'user': user,
                 'password_reset_url': reset_url,
@@ -199,7 +109,7 @@ def forgot_password(request):
 
 
 def index(request):
-    return redirect('login_view')
+    return redirect('login')
 
 
 def enrollCourse(request):
@@ -241,7 +151,8 @@ def enrollCourse(request):
         context = {
             'user_profile': user_profile,
             'membership_selected': course_details.membership_level_required.name,
-            'existing_membership': user_profile.membership.name
+            'existing_membership': user_profile.membership.name,
+            'today_date': date.today().isoformat()
         }
         return render(request, 'payment.html', context)
 
@@ -259,10 +170,10 @@ def dropCourse(request):
 class HomeView(View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect('login_view')
+            return redirect('login')
 
         user_profile = UserProfile.objects.get(user=request.user)
-        course_list = Course.objects.all()
+        course_list = Course.objects.filter(published=True)
         if user_profile.role.name == "teacher":
             # teacher home page
             courses_per_instructor = Course.objects.filter(instructor=request.user.id)
@@ -305,8 +216,7 @@ class ProfileView(View):
     def get(self, request):
         user_profile = UserProfile.objects.get(user=request.user)
         context = {
-            'user_profile': user_profile,
-            'student_name': user_profile.user.username,
+            'user_profile': user_profile
         }
         return render(request, 'profile.html', context)
 
@@ -376,19 +286,31 @@ class CourseDetailView(View):
         except Enrollment.DoesNotExist:
             enrollments = None
         sections = Section.objects.filter(course=course)
+        section_ids = [section.id for section in sections]
+        contentExists = False
+        # print(f"my content is :{CourseContent.objects.filter(section__in=section_ids)}")
+        try:
+            if len(CourseContent.objects.filter(section__in=section_ids)) > 0:
+                contentExists = True
+        except:
+            pass
         context = {
             'course': course,
             'sections': sections,
             'user_profile': user_profile,
             'enrollments': enrollments,
-            'courseEnrollements': courseEnrollmentsCounter
+            'courseEnrollements': courseEnrollmentsCounter,
+            'contentExists': contentExists
         }
         print(context)
         return render(request, 'course_detail.html', context)
 
     def post(self, request, courseid):
         course = get_object_or_404(Course, id=courseid)
-        course.published = True
+        if request.POST.get('publish').lower() == 'publish':
+            course.published = True
+        else:
+            course.published = False
         course.save()
         return redirect('course_detail', courseid=courseid)
 
@@ -423,7 +345,7 @@ class AddSectionView(View):
 
 
 class SectionView(View):
-    def get(self, request, courseid, sectionid, role):
+    def get(self, request, courseid, sectionid):
         print('hi', courseid, sectionid)
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
@@ -433,7 +355,7 @@ class SectionView(View):
             'section': section,
             'course': course,
             'contents': contents,
-            'role': role,
+            'role': user_profile.role.name,
             'user_profile': user_profile
 
         }
@@ -487,29 +409,54 @@ class AddContentView(View):
             content_type=content_type,
         )
 
-        return redirect('section_detail', courseid=courseid, sectionid=sectionid, role=role)
+        return redirect('section_detail', courseid=courseid, sectionid=sectionid)
 
 
 class CourseNavigationView(View):
     def get(self, request, courseid, coursecontentid=None):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
-        section_list = course.section_set.all().order_by('order')
+        if user_profile.role.name == 'teacher':
+            course_content = get_object_or_404(CourseContent, id=coursecontentid)
+            # get the current section, its data and return
+            contents = {
+                course_content.section.name: [
+                    course_content
+                ]
+            }
+            context = {
+                'user_profile': user_profile,
+                'contents': contents,
+                'section': course_content.section,
+                'course': course,
+                'coursecontent': course_content
+            }
+            return render(request, 'course_navigation.html', context)
 
-        # # Get all the course contents related to the sections
-        # section_ids = section_list.values_list('id', flat=True)
-        sections = OrderedDict()
+        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
+        section_list = list(course.section_set.all().order_by('order'))
+        # Get all the course contents related to the sections
+        contents = OrderedDict()
         for sect in section_list:
-            sections[sect.name] = list(sect.coursecontent_set.all())
+            contents[sect.name] = list(sect.coursecontent_set.all())
+            content_list = []
+            for content in sect.coursecontent_set.all():
+                try:
+                    course_progress = CourseProgress.objects.get(course_content=content, enrollment=enrollment)
+                    content.is_completed = course_progress.status
+                except:
+                    content.is_completed = False
+                content_list.append(content)
+            contents[sect.name] = content_list
 
         # if contentid is not specified, then redirect to the first content in first section
         if coursecontentid is None:
-            section = next(iter(sections.values()))
+            # TODO: skip to first non-complete content instead of always taking first. If all contents are complete, display download certi page
+            section = next(iter(contents.values()))
             content = section[0]
             return redirect('course_navigation_content', courseid=courseid, coursecontentid=content.id)
 
         coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
-        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
 
         course_progress_count = CourseProgress.objects.filter(enrollment=enrollment, status=True).count()
         course_contents_count = CourseContent.objects.filter(section__course_id=enrollment.course.id).count()
@@ -524,7 +471,7 @@ class CourseNavigationView(View):
         context = {
             'user_profile': user_profile,
             'course': course,
-            'sections': sections,
+            'contents': contents,
             'coursecontent': coursecontent,
             'courseProgress': courseProgress,
             'progress': progress,
@@ -571,7 +518,6 @@ class Payment(View):
         membership_selected = request.GET.get('membership_selected')
         user_profile = UserProfile.objects.get(user=request.user)
         existing_membership = user_profile.membership.name
-
         if (existing_membership == 'silver' and membership_selected == 'bronze') or (
                 existing_membership == 'gold' and membership_selected == 'bronze') or (
                 existing_membership == 'gold' and membership_selected == 'silver'):
@@ -585,6 +531,7 @@ class Payment(View):
             'membership_selected': membership_selected,
             'existing_membership': existing_membership,
             'user_profile': user_profile,
+            'today_date': date.today().isoformat()
         }
         response = render(request, 'payment.html', context)
         response.set_cookie('membership_selected', membership_selected, max_age=60)
