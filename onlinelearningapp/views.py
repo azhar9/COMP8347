@@ -273,7 +273,7 @@ class HomeView(View):
             return redirect('login')
 
         user_profile = UserProfile.objects.get(user=request.user)
-        course_list = Course.objects.all()
+        course_list = Course.objects.filter(published=True)
         if user_profile.role.name == "teacher":
             # teacher home page
             courses_per_instructor = Course.objects.filter(instructor=request.user.id)
