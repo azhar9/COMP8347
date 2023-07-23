@@ -187,7 +187,7 @@ def forgot_password(request):
             print("reset_url", reset_url)
 
             # Render the email template with the reset URL
-            email_subject = 'Password reset OnlineLearning'
+            email_subject = 'Password reset Eduhub Online Learning'
             email_message = render_to_string('password_reset_email.html', {
                 'user': user,
                 'password_reset_url': reset_url,
