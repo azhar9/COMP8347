@@ -8,8 +8,7 @@ Course Detail
 {% block content %}
 <div class="p-4">
     {% if user_profile.role.name == 'student' %}
-    <div class="unregistered-course-information-banner w-100 p-4 rounded-4 d-flex flex-column align-items-center"
-         style="background: white;">
+    <div class="unregistered-course-information-banner w-100 p-4 rounded-4 d-flex flex-column align-items-center background-white">
         <div class="unregistered-course-information-banner-title fs-2 fw-bold">{{ course.name }}</div>
         <div class="unregistered-course-information-banner-body d-flex my-4 align-self-start">
             <div class="unregistered-course-information-banner-body-profile d-flex flex-column align-items-center me-4">
@@ -42,13 +41,7 @@ Course Detail
             <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
             <span class="fs-2 fw-bold">{{ course.name }}</span>
         </div>
-        <form method="post">
-            {% csrf_token %}
-            {% if course.published == False %}
-            <input type="submit" name="publish" value="Publish">
-            {% endif %}
-        </form>
-        <div class="background-white p-4 rounded-4 shadow">
+        <div class="background-white p-4 rounded-4 shadow mt-4">
             <div class="fw-bold fs-4">Course Overview:</div>
             <div class="mt-4 fs-5">
                 {{ course.description }}
@@ -73,7 +66,7 @@ Course Detail
                     <img src="{% static 'images/RightArrow.png' %}" class="right-arrow">
                 </a>
                 {% empty %}
-                <p>No contents found</p>
+                <div class="fs-5 p-4">No contents found</div>
                 {% endfor %}
             </div>
 
@@ -84,6 +77,12 @@ Course Detail
                 <button class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-5 fs-5">Add Section</button>
             </a>
         </div>
+        <form method="post" class="d-flex flex-row justify-content-center">
+            {% csrf_token %}
+            {% if course.published == False %}
+            <input type="submit" name="publish" value="Publish" class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-2 fs-5">
+            {% endif %}
+        </form>
         {% endif %}
     </div>
     {% endblock %}
