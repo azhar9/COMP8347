@@ -1,7 +1,7 @@
 import os
 import uuid
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, date
 
 import pdfkit
 from django.contrib import messages
@@ -152,7 +152,8 @@ def enrollCourse(request):
         context = {
             'user_profile': user_profile,
             'membership_selected': course_details.membership_level_required.name,
-            'existing_membership': user_profile.membership.name
+            'existing_membership': user_profile.membership.name,
+            'today_date': date.today().isoformat()
         }
         return render(request, 'payment.html', context)
 
@@ -174,7 +175,7 @@ class HomeView(View):
             return redirect('login')
 
         user_profile = UserProfile.objects.get(user=request.user)
-        course_list = Course.objects.all()
+        course_list = Course.objects.filter(published=True)
         if user_profile.role.name == "teacher":
             # teacher home page
             courses_per_instructor = Course.objects.filter(instructor=request.user.id)
@@ -291,19 +292,31 @@ class CourseDetailView(View):
         except Enrollment.DoesNotExist:
             enrollments = None
         sections = Section.objects.filter(course=course)
+        section_ids = [section.id for section in sections]
+        contentExists = False
+        # print(f"my content is :{CourseContent.objects.filter(section__in=section_ids)}")
+        try:
+            if len(CourseContent.objects.filter(section__in=section_ids)) > 0:
+                contentExists = True
+        except:
+            pass
         context = {
             'course': course,
             'sections': sections,
             'user_profile': user_profile,
             'enrollments': enrollments,
-            'courseEnrollements': courseEnrollmentsCounter
+            'courseEnrollements': courseEnrollmentsCounter,
+            'contentExists': contentExists
         }
         print(context)
         return render(request, 'course_detail.html', context)
 
     def post(self, request, courseid):
         course = get_object_or_404(Course, id=courseid)
-        course.published = True
+        if request.POST.get('publish').lower() == 'publish':
+            course.published = True
+        else:
+            course.published = False
         course.save()
         return redirect('course_detail', courseid=courseid)
 
@@ -487,7 +500,6 @@ class Payment(View):
         membership_selected = request.GET.get('membership_selected')
         user_profile = UserProfile.objects.get(user=request.user)
         existing_membership = user_profile.membership.name
-
         if (existing_membership == 'silver' and membership_selected == 'bronze') or (
                 existing_membership == 'gold' and membership_selected == 'bronze') or (
                 existing_membership == 'gold' and membership_selected == 'silver'):
@@ -501,6 +513,7 @@ class Payment(View):
             'membership_selected': membership_selected,
             'existing_membership': existing_membership,
             'user_profile': user_profile,
+            'today_date': date.today().isoformat()
         }
         response = render(request, 'payment.html', context)
         response.set_cookie('membership_selected', membership_selected, max_age=60)

@@ -79,8 +79,10 @@ Course Detail
         </div>
         <form method="post" class="d-flex flex-row justify-content-center">
             {% csrf_token %}
-            {% if course.published == False %}
-            <input type="submit" name="publish" value="Publish" class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-2 fs-5">
+            {% if course.published == False and contentExists %}
+             <input type="submit" name="publish" value="Publish" class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-2 fs-5">
+            {% else %}
+              <input type="submit" name="publish" value="UnPublish" class="btn rounded-pill px-5 py-2 btn-color-unpublish mb-3 mt-2 fs-5">
             {% endif %}
         </form>
         {% endif %}
