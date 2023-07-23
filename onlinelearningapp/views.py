@@ -40,7 +40,7 @@ class PdfGen:
     path_to_wkhtmltopdf = os.getcwd() + os.sep + '/wkhtmltox/bin/wkhtmltopdf.exe'
 
     @staticmethod
-    def generate_pdf(studentName, dateStr, instructorName, pdfFilePath):
+    def generate_pdf(studentName, dateStr, instructorName, courseName, pdfFilePath):
         html = '''
         <!DOCTYPE html>
         <html>
@@ -101,7 +101,7 @@ class PdfGen:
                     <div class="certificate-title">Certificate of Completion</div>
                     <div class="certificate-content">This is to certify that</div>
                     <div class="student-name">[Student Name]</div>
-                    <div class="course-name">has successfully completed the course</div>
+                    <div class="course-name">has successfully completed the [courseName] course</div>
                     <div class="completion-date">on [Completion Date]</div>
                     <div class="signature">Authorized Signature</div>
                     <div class="instructor-name">[Instructor Name]</div>
@@ -110,7 +110,8 @@ class PdfGen:
             </html>
             '''
         html = html.replace("[Student Name]", studentName).replace("[Completion Date]", dateStr).replace(
-            "[Instructor Name]", instructorName)
+            "[Instructor Name]", instructorName).replace(
+            "[courseName]", courseName)
         try:
             pdfkit.from_string(html, pdfFilePath, options=PdfGen.options,
                                configuration=pdfkit.configuration(wkhtmltopdf=PdfGen.path_to_wkhtmltopdf))
@@ -581,7 +582,7 @@ class CourseContentFileView(View):
 
 class Payment(View):
     def get(self, request):
-        print('Insdie payment view')
+        print('Insdie payment view : GET')
         membership_selected = request.GET.get('membership_selected')
         user_profile = UserProfile.objects.get(user=request.user)
         existing_membership = user_profile.membership.name
@@ -592,7 +593,9 @@ class Payment(View):
             print("inside if condition ")
             user_profile.membership = Membership.objects.get(name=membership_selected)
             user_profile.save()
-            return redirect('profile')
+            response = redirect('profile')
+            response.set_cookie('membership_selected', membership_selected, max_age=60)
+            return response
         context = {
             'membership_selected': membership_selected,
             'existing_membership': existing_membership,
@@ -605,25 +608,27 @@ class Payment(View):
         return response
 
     def post(self, request):
+        print('Insdie payment view : POST')
         membership_name = request.COOKIES.get('membership_selected')
         print(f"existing_membership form cookie is : {membership_name}")
         if membership_name is None:
-            membership_name = request.GET.get('membership_selected')
-            print(f"membership selected  form GET is : {membership_name}")
-        # existing_membership = request.COOKIES.get('existing_membership')
-        user_profile = get_object_or_404(UserProfile, user=request.user)
-        existing_membership = user_profile.membership
-        print(f"existing_membership from dB is : {existing_membership}")
+            membership_name = request.POST.get('membership_selected')
+            print(f"existing_membership form POST is : {membership_name}")
 
-        user_profile.membership = Membership.objects.get(name=existing_membership.name)
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+
+        user_profile.membership = Membership.objects.get(name=membership_name)
         user_profile.save()
-        return redirect('profile')
+        response = redirect('profile')
+        response.set_cookie('membership_selected', membership_name, max_age=60)
+        return response
 
 
 def download_certificate(request, courseid):
     user_profile = UserProfile.objects.get(user_id=request.user.id)
     certificate = Certificate.objects.filter(student_id=request.user.id, course_id=courseid).first()
     course = Course.objects.get(pk=courseid)
+    filepath = None
     if certificate:
         filepath = certificate.filepath
     pdf_file_path = os.path.join(settings.CERTIFICATE_PATH, str(filepath))
@@ -635,7 +640,8 @@ def download_certificate(request, courseid):
         filepath = randomGuid + '.pdf'
         instructor_name = course.instructor.username
         pdf_file_path = os.path.join(settings.CERTIFICATE_PATH, str(filepath))
-        if not PdfGen.generate_pdf(user_profile.user.username, currentDate, instructor_name, pdf_file_path):
+        if not PdfGen.generate_pdf(user_profile.user.username, currentDate, instructor_name, course.name,
+                                   pdf_file_path):
             return HttpResponse("Interval Server Error", status=500)
 
         certificate = Certificate(
