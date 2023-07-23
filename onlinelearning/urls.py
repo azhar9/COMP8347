@@ -20,7 +20,7 @@ from django.urls import path
 
 from onlinelearningapp.views import RegisterView, HomeView, login_view, forgot_password, index, CourseView, \
     CourseDetailView, SectionView, AddSectionView, AddContentView, ProfileView, enrollCourse, CourseNavigationView, \
-    dropCourse, CourseContentFileView, ChangeMembership,Payment
+    dropCourse, CourseContentFileView, ChangeMembership, Payment, download_certificate
 
 urlpatterns = [
     path('', index, name='index'),
@@ -47,9 +47,11 @@ urlpatterns = [
     path('courses/<int:courseid>/<int:sectionid>/<str:role>', SectionView.as_view(), name='section_detail'),
     path('courses/<int:courseid>/<int:sectionid>/add-content/', AddContentView.as_view(), name='add_content'),
     path('courses/<int:courseid>/<int:sectionid>/<int:coursecontentid>', AddContentView.as_view(), name='add_content'),
-    path('course_navigation/<int:courseid>/<int:coursecontentid>', CourseNavigationView.as_view(), name='course_navigation_content'),
+    path('course_navigation/<int:courseid>/<int:coursecontentid>', CourseNavigationView.as_view(),
+         name='course_navigation_content'),
     path('course_navigation/<int:courseid>', CourseNavigationView.as_view(), name='course_navigation'),
     path('course/content/<int:coursecontentid>/', CourseContentFileView.as_view(), name='coursecontent'),
     path('changeMembership', ChangeMembership.as_view(), name='changemembership'),
-    path('payment', Payment.as_view(), name='payment')
+    path('payment', Payment.as_view(), name='payment'),
+    path('certificate/course/<int:courseid>', download_certificate, name='download_certificate'),
 ]

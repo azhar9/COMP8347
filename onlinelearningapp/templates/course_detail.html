@@ -50,7 +50,10 @@ Course Detail
             <div class="fs-5">{{ course.membership_level_required.name|capfirst }}</div>
             <div class="mt-4 fw-bold fs-4">Published:</div>
             <div class="fs-5"> {{ course.published|yesno:"Yes,No" }}</div>
+            <div class="mt-4 fw-bold fs-4">Total students Enrolled:</div>
+            <div class="fs-5"> {{ courseEnrollements }}</div>
         </div>
+
 
         <div class="background-white rounded-4 shadow mt-4 pb-4">
             <div class="fw-bold fs-4 p-4">Course Details</div>

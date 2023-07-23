@@ -8,12 +8,15 @@ User Profile
 <div class="w-100 d-flex flex-column justify-content-center align-items-center">
     <div class="p-5 background-white shadow d-flex flex-column rounded-4 fw-bold" >
         <ul>
-            <p class="capitalize fs-3">User Name: {{ user_profile.user.username }}</p>
-            <p class="capitalize fs-3">{{ user_profile.role }}</p>
-            <p class="capitalize fs-3">Membership Details : {{ user_profile.membership.name }}</p>
+            <p class="capitalize fs-3">User Name: {{ user_profile.user.username | capfirst }}</p>
+            <p class="capitalize fs-3">{{ user_profile.role | capfirst }}</p>
+            {% if user_profile.role.name == 'student' %}
+            <p class="capitalize fs-3">Membership Details : {{ user_profile.membership.name | capfirst  }}</p>
+            {% endif %}
         </ul>
-
-        <input type="button" value="Change Membership" onclick="location.href='/changeMembership'" class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-5 fs-5">
+          {% if user_profile.role.name == 'student' %}
+            <input type="button" value="Change Membership" onclick="location.href='/changeMembership'" class="btn rounded-pill px-5 py-2 btn-color-primary mb-3 mt-5 fs-5">
+          {% endif %}
     </div>
 </div>
 {% endblock %}
