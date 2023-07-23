@@ -12,17 +12,14 @@ Course Detail
         class="fs-2 mx-2">></span>
     <span class="fs-2 fw-bold">New Section</span>
 </div>
-<form method="post">
-    {% csrf_token %}
-    <input type="hidden" name="course_id" value="{{ course.id }}">
-    <div>
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name">
-    </div>
-    <div>
-        <label for="description">Description:</label>
-        <textarea id="description" name="description"></textarea>
-    </div>
-    <input type="submit" value="Save">
-</form>
+<div class="d-flex flex-row justify-content-center mt-5">
+    <form method="post" class="background-white p-5 rounded-3 d-flex flex-column w-50 shadow-lg">
+        {% csrf_token %}
+        <input type="hidden" name="course_id" value="{{ course.id }}">
+        <input type="text" id="name" name="name" class="form-control form-control-lg mt-3 shadow-sm" required placeholder="Name">
+        <textarea id="description" name="description" class="form-control form-control-lg mt-3 shadow-sm" required
+                  placeholder="Description" style="height: 150px;"></textarea>
+        <input type="submit" value="Save" class="btn btn-sm rounded-pill px-5 py-2 btn-color-primary mt-3 shadow-sm fs-5">
+    </form>
+</div>
 {% endblock %}
