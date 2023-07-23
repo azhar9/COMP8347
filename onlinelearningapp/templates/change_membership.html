@@ -7,8 +7,8 @@ Change Membership
 
 {% block content %}
 <div class="p-4">
-    <div class="fs-4 fw-bold">You are currently subscribed to {{
-        user_profile.membership.nameuser_profile.membership.name }} courses. Upgrade your
+    <div class="fs-4 fw-bold">You are currently subscribed to
+        <strong> {{ user_profile.membership.name | capfirst }} </strong>courses. Upgrade your
         current
         membership to
         explore more exciting options and enhance your learning experience.

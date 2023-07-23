@@ -44,15 +44,15 @@ Payment
             <label for="owner" class="fw-bold">Owner Name:</label>
             <input type="text" id="owner" name="name" required class="form-control">
             <label for="card_number" class="fw-bold mt-3">Credit/Debit Card Number:</label>
-            <input type="text" id="card_number" name="card_number" maxlength="16" placeholder="xxxx-xxxx-xxxx-xxxx"
-                   class="form-control form-control-lg"
+            <input type="text" id="card_number" name="card_number" minlength="16" maxlength="16" placeholder="xxxx-xxxx-xxxx-xxxx"
+                  pattern="[0-9]{16}"  title="Please enter exactly 16 digits of your debit/credit card" class="form-control form-control-lg"
                    required>
 
             <label for="expiry_date" class="fw-bold mt-3">Expiry Date:</label>
             <input type="date" id="expiry_date" name="expiry_date" class="form-control" required>
 
             <label for="cvv" class="fw-bold mt-3">Cvv:</label>
-            <input type="input" id="cvv" name="cvv" required maxlength="4" width="1"
+            <input type="input" id="cvv" name="cvv" required maxlength="4" width="1" minlength="3"
                    class="form-control">
         </div>
         <button type="submit" class="btn rounded-pill px-5 py-1 btn-color-success mt-3 fs-5">Make Payment</button>
