@@ -10,12 +10,6 @@ class TimestampedModel(models.Model):
         abstract = True
 
 
-# TODO: PREREQ-- While creating data for Membership create in the order of MEMBERSHIP_TYPES make sure the id matches
-#     MEMBERSHIP_TYPES = (
-#         (1, 'gold', '3', 'CAD'),
-#         (2, 'silver','1', 'CAD'),
-#         (3, 'bronze','0', 'CAD'),
-#     )
 class Membership(TimestampedModel):
     name = models.CharField(max_length=30)
     price = models.DecimalField(max_digits=5, decimal_places=2)

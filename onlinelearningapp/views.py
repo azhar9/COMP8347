@@ -121,7 +121,6 @@ class PdfGen:
         return True
 
 
-# TODO: use class based views
 class RegisterView(View):
     def get(self, request):
         return render(request, 'register.html')
@@ -257,7 +256,6 @@ def dropCourse(request):
     return redirect('home')
 
 
-# TODO: create different home page templates for both students and teacher
 class HomeView(View):
     def get(self, request):
         if not request.user.is_authenticated:
@@ -351,8 +349,6 @@ class CourseView(View):
 
         instructor = User.objects.get(id=instructor_id)
         membership_level_required = Membership.objects.get(name=membership)
-
-        # Create the course and associate it with the instructor
         course = Course.objects.create(
             name=name,
             description=description,
@@ -365,7 +361,6 @@ class CourseView(View):
 
 class CourseDetailView(View):
     def get(self, request, courseid):
-        # TODO: get an object here with section and their respective content
         course = get_object_or_404(Course, id=courseid)
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
@@ -509,7 +504,6 @@ class CourseNavigationView(View):
 
         # if contentid is not specified, then redirect to the first content in first section
         if coursecontentid is None:
-            # TODO: skip to first non-complete content instead of always taking first. If all contents are complete, display download certi page
             section = next(iter(sections.values()))
             content = section[0]
             return redirect('course_navigation_content', courseid=courseid, coursecontentid=content.id)
