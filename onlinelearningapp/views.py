@@ -414,7 +414,7 @@ class AddContentView(View):
             content_type=content_type,
         )
 
-        return redirect('section_detail', courseid=courseid, sectionid=sectionid, role=role)
+        return redirect('section_detail', courseid=courseid, sectionid=sectionid)
 
 
 class CourseNavigationView(View):
