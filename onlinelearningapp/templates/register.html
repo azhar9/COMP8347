@@ -31,5 +31,14 @@
     <a class="fs-5" href="{% url 'login' %}">Already have an account?</a>
 </div>
 {% bootstrap_javascript %}
+{% if error %}
+    <script>
+    function showAlert() {
+        var errorMessage = "{{ error }}";
+        alert(errorMessage);
+    }
+    window.onload = showAlert;
+    </script>
+{% endif %}
 </body>
 </html>

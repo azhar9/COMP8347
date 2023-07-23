@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Q
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -131,7 +132,13 @@ class RegisterView(View):
         email = request.POST['email']
         password = request.POST['password']
         role = request.POST['role']
-
+        existing_user = User.objects.filter(Q(username=username) | Q(email=email)).first()
+        context = {"error": None}
+        if existing_user:
+            context = {
+                "error": "username or email already exists!"
+            }
+            return render(request, 'register.html', context=context)
         # Create a new User object
         user = User.objects.create_user(username=username, email=email, password=password)
 
@@ -142,7 +149,7 @@ class RegisterView(View):
         UserProfile.objects.create(user=user, role=role_obj)
         return redirect('home')  # Redirect to the home page after successful registration
 
-        return render(request, 'register.html')
+        return render(request, 'register.html', context=context)
 
 
 def login_view(request):
@@ -179,7 +186,7 @@ def forgot_password(request):
             print("reset_url", reset_url)
 
             # Render the email template with the reset URL
-            email_subject = 'Password reset OnlineLearning'
+            email_subject = 'Password reset Eduhub Online Learning'
             email_message = render_to_string('password_reset_email.html', {
                 'user': user,
                 'password_reset_url': reset_url,
