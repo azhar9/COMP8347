@@ -1,7 +1,8 @@
 import os
 import uuid
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, date
+
 
 import pdfkit
 from django.contrib import messages
@@ -249,7 +250,8 @@ def enrollCourse(request):
         context = {
             'user_profile': user_profile,
             'membership_selected': course_details.membership_level_required.name,
-            'existing_membership': user_profile.membership.name
+            'existing_membership': user_profile.membership.name,
+            'today_date': date.today().isoformat()
         }
         return render(request, 'payment.html', context)
 
@@ -584,7 +586,6 @@ class Payment(View):
         membership_selected = request.GET.get('membership_selected')
         user_profile = UserProfile.objects.get(user=request.user)
         existing_membership = user_profile.membership.name
-
         if (existing_membership == 'silver' and membership_selected == 'bronze') or (
                 existing_membership == 'gold' and membership_selected == 'bronze') or (
                 existing_membership == 'gold' and membership_selected == 'silver'):
@@ -598,6 +599,7 @@ class Payment(View):
             'membership_selected': membership_selected,
             'existing_membership': existing_membership,
             'user_profile': user_profile,
+            'today_date': date.today().isoformat()
         }
         response = render(request, 'payment.html', context)
         response.set_cookie('membership_selected', membership_selected, max_age=60)
