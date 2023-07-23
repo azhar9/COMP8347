@@ -218,8 +218,7 @@ class ProfileView(View):
     def get(self, request):
         user_profile = UserProfile.objects.get(user=request.user)
         context = {
-            'user_profile': user_profile,
-            'student_name': user_profile.user.username,
+            'user_profile': user_profile
         }
         return render(request, 'profile.html', context)
 
@@ -351,7 +350,7 @@ class AddSectionView(View):
 
 
 class SectionView(View):
-    def get(self, request, courseid, sectionid, role):
+    def get(self, request, courseid, sectionid):
         print('hi', courseid, sectionid)
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
@@ -361,7 +360,7 @@ class SectionView(View):
             'section': section,
             'course': course,
             'contents': contents,
-            'role': role,
+            'role': user_profile.role.name,
             'user_profile': user_profile
 
         }
@@ -422,23 +421,47 @@ class CourseNavigationView(View):
     def get(self, request, courseid, coursecontentid=None):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
-        section_list = course.section_set.all().order_by('order')
+        if user_profile.role.name == 'teacher':
+            course_content = get_object_or_404(CourseContent, id=coursecontentid)
+            # get the current section, its data and return
+            contents = {
+                course_content.section.name: [
+                    course_content
+                ]
+            }
+            context = {
+                'user_profile': user_profile,
+                'contents': contents,
+                'section': course_content.section,
+                'course': course,
+                'coursecontent': course_content
+            }
+            return render(request, 'course_navigation.html', context)
 
-        # # Get all the course contents related to the sections
-        # section_ids = section_list.values_list('id', flat=True)
-        sections = OrderedDict()
+        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
+        section_list = list(course.section_set.all().order_by('order'))
+        # Get all the course contents related to the sections
+        contents = OrderedDict()
         for sect in section_list:
-            sections[sect.name] = list(sect.coursecontent_set.all())
+            contents[sect.name] = list(sect.coursecontent_set.all())
+            content_list = []
+            for content in sect.coursecontent_set.all():
+                try:
+                    course_progress = CourseProgress.objects.get(course_content=content, enrollment=enrollment)
+                    content.is_completed = course_progress.status
+                except:
+                    content.is_completed = False
+                content_list.append(content)
+            contents[sect.name] = content_list
 
         # if contentid is not specified, then redirect to the first content in first section
         if coursecontentid is None:
             # TODO: skip to first non-complete content instead of always taking first. If all contents are complete, display download certi page
-            section = next(iter(sections.values()))
+            section = next(iter(contents.values()))
             content = section[0]
             return redirect('course_navigation_content', courseid=courseid, coursecontentid=content.id)
 
         coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
-        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
 
         course_progress_count = CourseProgress.objects.filter(enrollment=enrollment, status=True).count()
         course_contents_count = CourseContent.objects.filter(section__course_id=enrollment.course.id).count()
@@ -453,7 +476,7 @@ class CourseNavigationView(View):
         context = {
             'user_profile': user_profile,
             'course': course,
-            'sections': sections,
+            'contents': contents,
             'coursecontent': coursecontent,
             'courseProgress': courseProgress,
             'progress': progress,

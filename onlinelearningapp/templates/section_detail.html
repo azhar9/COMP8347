@@ -25,10 +25,11 @@ Section Detail
         {% if contents %}
         <div>
             {% for content in contents %}
-            <div class="border-bottom py-2 px-4 d-flex flex-row align-items-center justify-content-between">
+            <a href="{% url 'course_navigation_content' courseid=course.id coursecontentid=content.id %}"
+                class="border-bottom py-2 px-4 d-flex flex-row align-items-center justify-content-between">
                 {{ content.name }}
                 <img src="{% static 'images/RightArrow.png' %}" class="right-arrow">
-            </div>
+            </a>
             {% endfor %}
         </div>
         {% else %}
