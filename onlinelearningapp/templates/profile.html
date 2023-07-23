@@ -6,7 +6,7 @@ User Profile
 
 {% block content %}
 <div class="w-100 d-flex flex-column justify-content-center align-items-center">
-    <div class="p-4 background-white shadow d-flex flex-column rounded-4 fw-bold mt-4" >
+    <div class="p-4 background-white shadow d-flex flex-column rounded-4 mt-4" >
         <ul>
             <p class="capitalize fs-3">User Name: {{ user_profile.user.username | capfirst }}</p>
             <p class="capitalize fs-3">{{ user_profile.role | capfirst }}</p>

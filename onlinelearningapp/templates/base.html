@@ -8,7 +8,7 @@
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/home-student.css' %}" rel="stylesheet">
 </head>
-<body class="p-4">
+<body class="p-4 d-flex flex-column min-vh-100">
 <div class="d-flex w-100 justify-content-between py-4 row g-0">
     <div class="d-flex flex-row align-items-center col-md-6 justify-content-between">
         <div>
@@ -28,10 +28,13 @@
     </div>
 </div>
 <hr>
-{% block content %} {% endblock %}
+<div class="flex-grow-1">
+    {% block content %}{% endblock %}
+</div>
 <div id ='footer'>
     <p align="center">Copyright © 2023 University of Windsor COMP-8347 Group 7</p>
 </div>
 {% bootstrap_javascript %}
 {% block script %} {% endblock %}
 </body>
+</html>
