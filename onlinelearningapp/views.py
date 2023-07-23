@@ -40,7 +40,7 @@ class PdfGen:
     path_to_wkhtmltopdf = os.getcwd() + os.sep + '/wkhtmltox/bin/wkhtmltopdf.exe'
 
     @staticmethod
-    def generate_pdf(studentName, dateStr, instructorName, pdfFilePath):
+    def generate_pdf(studentName, dateStr, instructorName, courseName, pdfFilePath):
         html = '''
         <!DOCTYPE html>
         <html>
@@ -101,7 +101,7 @@ class PdfGen:
                     <div class="certificate-title">Certificate of Completion</div>
                     <div class="certificate-content">This is to certify that</div>
                     <div class="student-name">[Student Name]</div>
-                    <div class="course-name">has successfully completed the course</div>
+                    <div class="course-name">has successfully completed the [courseName] course</div>
                     <div class="completion-date">on [Completion Date]</div>
                     <div class="signature">Authorized Signature</div>
                     <div class="instructor-name">[Instructor Name]</div>
@@ -110,7 +110,8 @@ class PdfGen:
             </html>
             '''
         html = html.replace("[Student Name]", studentName).replace("[Completion Date]", dateStr).replace(
-            "[Instructor Name]", instructorName)
+            "[Instructor Name]", instructorName).replace(
+            "[courseName]", [courseName])
         try:
             pdfkit.from_string(html, pdfFilePath, options=PdfGen.options,
                                configuration=pdfkit.configuration(wkhtmltopdf=PdfGen.path_to_wkhtmltopdf))
@@ -612,7 +613,8 @@ def download_certificate(request, courseid):
         filepath = randomGuid + '.pdf'
         instructor_name = course.instructor.username
         pdf_file_path = os.path.join(settings.CERTIFICATE_PATH, str(filepath))
-        if not PdfGen.generate_pdf(user_profile.user.username, currentDate, instructor_name, pdf_file_path):
+        if not PdfGen.generate_pdf(user_profile.user.username, currentDate, instructor_name, course.name,
+                                   pdf_file_path):
             return HttpResponse("Interval Server Error", status=500)
 
         certificate = Certificate(
