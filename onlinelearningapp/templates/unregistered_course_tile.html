@@ -1,7 +1,7 @@
-<div class="card border-0 rounded-3 mb-3 me-3 shadow-sm" style="width: 250px; cursor: pointer">
+<div class="card border-0 rounded-3 mb-3 me-3 shadow" style="width: 250px; cursor: pointer">
     <div class="card-body text-success g-0 d-flex flex-column justify-content-between">
         <h5 class="card-title mt-3 text-color-black">{{ course.name }}</h5>
         <h6 class="card-text my-3 text-color-black">{{ course.instructor }}</h6>
-        <a href="{% url 'course_detail' course.id %}" class="btn btn-sm rounded-pill btn-color-success px-3">start learning</a>
+        <a href="{% url 'course_detail' course.id %}" class="btn btn-sm rounded-pill btn-color-success px-3">Start Learning</a>
     </div>
 </div>

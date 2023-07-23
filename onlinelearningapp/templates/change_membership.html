@@ -75,7 +75,17 @@ Change Membership
         if (currentMembership) {
             document.getElementById(currentMembership + '-button').disabled = true;
             document.getElementById(currentMembership.toLowerCase()).classList.add('background-off-white');
+            document.getElementById(currentMembership + '-button').innerHTML='Subscribed';
         }
+
+        if(currentMembership == 'gold') {
+            document.getElementById('silver-button').disabled = true;
+            document.getElementById('silver').classList.add('background-off-white');
+            document.getElementById('silver-button').innerHTML='Subscribed';
+        }
+           document.getElementById('bronze-button').disabled = true;
+           document.getElementById('bronze').classList.add('background-off-white');
+           document.getElementById('bronze-button').innerHTML='Subscribed';
     }
 
 

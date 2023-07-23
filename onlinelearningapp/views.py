@@ -1,7 +1,7 @@
 import os
 import uuid
 from collections import OrderedDict
-from datetime import datetime
+from datetime import datetime, date
 
 import pdfkit
 from django.contrib import messages
@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Q
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -21,104 +22,7 @@ from onlinelearning import settings
 from .models import Role, UserProfile, Course, Membership, Enrollment, Section, CourseContent, CourseProgress, \
     Certificate
 
-
-class PdfGen:
-    options = {
-        'page-size': 'A4',
-        'margin-top': '0.75in',
-        'margin-right': '0.75in',
-        'margin-bottom': '0.75in',
-        'margin-left': '0.75in',
-        'encoding': "UTF-8",
-        "enable-local-file-access": "",
-        "zoom": "1",
-        "load-error-handling": "ignore",
-        "load-media-error-handling": "ignore",
-        "javascript-delay": "1000",
-        "log-level": "error"
-    }
-    path_to_wkhtmltopdf = os.getcwd() + os.sep + '/wkhtmltox/bin/wkhtmltopdf.exe'
-
-    @staticmethod
-    def generate_pdf(studentName, dateStr, instructorName, courseName, pdfFilePath):
-        html = '''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Course Completion Certificate</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                }
-                .certificate {
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 30px;
-                    border: 2px solid #333;
-                }
-                .certificate-title {
-                    font-size: 24px;
-                    font-weight: bold;
-                    text-align: center;
-                }
-                .certificate-content {
-                    font-size: 18px;
-                    margin-top: 20px;
-                    text-align: center;
-                }
-                .student-name {
-                    font-size: 22px;
-                    font-weight: bold;
-                    margin-top: 40px;
-                    text-align: center;
-                }
-                .course-name {
-                    font-size: 20px;
-                    margin-top: 20px;
-                    text-align: center;
-                }
-                .completion-date {
-                    font-size: 18px;
-                    margin-top: 20px;
-                    text-align: center;
-                }
-                .signature {
-                    font-size: 18px;
-                    font-weight: bold;
-                    margin-top: 40px;
-                        text-align: center;
-                    }
-                    .instructor-name {
-                        font-size: 18px;
-                        margin-top: 10px;
-                        text-align: center;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="certificate">
-                    <div class="certificate-title">Certificate of Completion</div>
-                    <div class="certificate-content">This is to certify that</div>
-                    <div class="student-name">[Student Name]</div>
-                    <div class="course-name">has successfully completed the [courseName] course</div>
-                    <div class="completion-date">on [Completion Date]</div>
-                    <div class="signature">Authorized Signature</div>
-                    <div class="instructor-name">[Instructor Name]</div>
-                </div>
-            </body>
-            </html>
-            '''
-        html = html.replace("[Student Name]", studentName).replace("[Completion Date]", dateStr).replace(
-            "[Instructor Name]", instructorName).replace(
-            "[courseName]", courseName)
-        try:
-            pdfkit.from_string(html, pdfFilePath, options=PdfGen.options,
-                               configuration=pdfkit.configuration(wkhtmltopdf=PdfGen.path_to_wkhtmltopdf))
-        except Exception as e:
-            print(e)
-            return False
-        return True
+from .certificate import PdfGen
 
 
 # TODO: use class based views
@@ -131,7 +35,13 @@ class RegisterView(View):
         email = request.POST['email']
         password = request.POST['password']
         role = request.POST['role']
-
+        existing_user = User.objects.filter(Q(username=username) | Q(email=email)).first()
+        context = {"error": None}
+        if existing_user:
+            context = {
+                "error": "username or email already exists!"
+            }
+            return render(request, 'register.html', context=context)
         # Create a new User object
         user = User.objects.create_user(username=username, email=email, password=password)
 
@@ -142,7 +52,7 @@ class RegisterView(View):
         UserProfile.objects.create(user=user, role=role_obj)
         return redirect('home')  # Redirect to the home page after successful registration
 
-        return render(request, 'register.html')
+        return render(request, 'register.html', context=context)
 
 
 def login_view(request):
@@ -179,7 +89,7 @@ def forgot_password(request):
             print("reset_url", reset_url)
 
             # Render the email template with the reset URL
-            email_subject = 'Password reset OnlineLearning'
+            email_subject = 'Password reset Eduhub Online Learning'
             email_message = render_to_string('password_reset_email.html', {
                 'user': user,
                 'password_reset_url': reset_url,
@@ -200,7 +110,7 @@ def forgot_password(request):
 
 
 def index(request):
-    return redirect('login_view')
+    return redirect('login')
 
 
 def enrollCourse(request):
@@ -209,12 +119,26 @@ def enrollCourse(request):
     course_details = get_object_or_404(Course, id=course_id)
     print("Course details found")
     user_profile = UserProfile.objects.get(user_id=request.user.id)
-    print("Found the elememtns")
-    print("Course membershoip Type", course_details.membership_level_required)
-    print("User membershoip Type", user_profile.membership)
+    print("Found the elements")
+    print("Course membership Type", course_details.membership_level_required)
+    print("User membership Type", user_profile.membership)
     try:
         if course_details.membership_level_required.name != user_profile.membership.name:
-            enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=course_id)
+            if user_profile.membership.name == 'bronze':
+                enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=course_id)
+            elif user_profile.membership.name == 'gold':
+                course_enrollment = Enrollment()
+                course_enrollment.course_id = course_id
+                course_enrollment.student_id = request.user.id
+                course_enrollment.save()
+            else:
+                if course_details.membership_level_required.name == 'gold':
+                    enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=course_id)
+                else:
+                    course_enrollment = Enrollment()
+                    course_enrollment.course_id = course_id
+                    course_enrollment.student_id = request.user.id
+                    course_enrollment.save()
         else:
             # print("Enrollments found")
             course_enrollment = Enrollment()
@@ -228,7 +152,8 @@ def enrollCourse(request):
         context = {
             'user_profile': user_profile,
             'membership_selected': course_details.membership_level_required.name,
-            'existing_membership': user_profile.membership.name
+            'existing_membership': user_profile.membership.name,
+            'today_date': date.today().isoformat()
         }
         return render(request, 'payment.html', context)
 
@@ -247,10 +172,10 @@ def dropCourse(request):
 class HomeView(View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect('login_view')
+            return redirect('login')
 
         user_profile = UserProfile.objects.get(user=request.user)
-        course_list = Course.objects.all()
+        course_list = Course.objects.filter(published=True)
         if user_profile.role.name == "teacher":
             # teacher home page
             courses_per_instructor = Course.objects.filter(instructor=request.user.id)
@@ -366,19 +291,31 @@ class CourseDetailView(View):
         except Enrollment.DoesNotExist:
             enrollments = None
         sections = Section.objects.filter(course=course)
+        section_ids = [section.id for section in sections]
+        contentExists = False
+        # print(f"my content is :{CourseContent.objects.filter(section__in=section_ids)}")
+        try:
+            if len(CourseContent.objects.filter(section__in=section_ids)) > 0:
+                contentExists = True
+        except:
+            pass
         context = {
             'course': course,
             'sections': sections,
             'user_profile': user_profile,
             'enrollments': enrollments,
-            'courseEnrollements': courseEnrollmentsCounter
+            'courseEnrollements': courseEnrollmentsCounter,
+            'contentExists': contentExists
         }
         print(context)
         return render(request, 'course_detail.html', context)
 
     def post(self, request, courseid):
         course = get_object_or_404(Course, id=courseid)
-        course.published = True
+        if request.POST.get('publish').lower() == 'publish':
+            course.published = True
+        else:
+            course.published = False
         course.save()
         return redirect('course_detail', courseid=courseid)
 
@@ -586,7 +523,6 @@ class Payment(View):
         membership_selected = request.GET.get('membership_selected')
         user_profile = UserProfile.objects.get(user=request.user)
         existing_membership = user_profile.membership.name
-
         if (existing_membership == 'silver' and membership_selected == 'bronze') or (
                 existing_membership == 'gold' and membership_selected == 'bronze') or (
                 existing_membership == 'gold' and membership_selected == 'silver'):
@@ -600,6 +536,7 @@ class Payment(View):
             'membership_selected': membership_selected,
             'existing_membership': existing_membership,
             'user_profile': user_profile,
+            'today_date': date.today().isoformat()
         }
         response = render(request, 'payment.html', context)
         response.set_cookie('membership_selected', membership_selected, max_age=60)

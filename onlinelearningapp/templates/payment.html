@@ -14,9 +14,10 @@ Payment
     <form method="post" action="{% url 'payment' %}"
           class="background-white p-4 rounded-4 d-flex flex-column align-items-center mt-5" style="width: 450px;">
         {% csrf_token %}
-        <div class="fs-4 fw-bold">{{ existing_membership|capfirst }}</div>
+        <div class="fs-4 fw-bold">{{ membership_selected|capfirst }}</div>
         <div class="fw-bold">You have to pay only once, and then you can start using our services.</div>
         <div class="mt-4">
+            {% if membership_selected == 'silver' %}
             <div class="row">
                 <div class="col-8 text-left fw-bold">Silver membership price:</div>
                 <div class="col-4 fw-bold">$100.00</div>
@@ -37,7 +38,28 @@ Payment
                 <div class="col-8 fw-bold">Total Price:</div>
                 <div class="col-4 fw-bold">$113.00</div>
             </div>
-
+           {% elif membership_selected == 'gold' %}
+            <div class="row">
+                <div class="col-8 text-left fw-bold">Gold membership price:</div>
+                <div class="col-4 fw-bold">$300.00</div>
+            </div>
+            <div class="row">
+                <div class="col-8 fw-bold">PST:</div>
+                <div class="col-4 fw-bold">$15.00</div>
+            </div>
+            <div class="row">
+                <div class="col-8 fw-bold">GST:</div>
+                <div class="col-4 fw-bold">$24.00</div>
+            </div>
+            <div class="row">
+                <div class="col-8 fw-bold">Total tax:</div>
+                <div class="col-4 fw-bold">$39.00</div>
+            </div>
+            <div class="row">
+                <div class="col-8 fw-bold">Total Price:</div>
+                <div class="col-4 fw-bold">$339.00</div>
+            </div>
+            {% endif %}
         </div>
         <div class="fs-4 fw-bold mt-5 mb-3">Card Detail Information</div>
         <div class="w-100">
@@ -49,10 +71,10 @@ Payment
                    required>
 
             <label for="expiry_date" class="fw-bold mt-3">Expiry Date:</label>
-            <input type="date" id="expiry_date" name="expiry_date" class="form-control" required>
+            <input type="date" id="expiry_date" name="expiry_date" class="form-control" required min="{{ today_date }}" required>
 
             <label for="cvv" class="fw-bold mt-3">Cvv:</label>
-            <input type="input" id="cvv" name="cvv" required maxlength="4" width="1" minlength="3"
+            <input type="input" id="cvv" name="cvv" required maxlength="4" width="1" minlength="3" pattern="[0-9]{4}" title="Input should be number only "
                    class="form-control">
             <input type="hidden" name="membership_selected" value="{{ membership_selected }}">
         </div>

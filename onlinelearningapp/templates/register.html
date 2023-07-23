@@ -10,26 +10,35 @@
 </head>
 <body class="w-100 d-flex flex-column justify-content-center align-items-center">
 <img src="{% static 'images/Eduhub-4 2.png' %}" class="register-logo">
-<div class="w-50 p-5 background-white shadow rounded-3">
+<div class="w-50 p-5 background-white shadow-lg rounded-3 mt-4">
     <form method="post" class="m-3 d-flex flex-column align-items-center">
         {% csrf_token %}
-        <input type="text" id="username" name="username" class="form-control form-control-lg shadow"
+        <input type="text" id="username" name="username" class="form-control form-control-lg shadow-sm"
                placeholder="username"><br>
 
-        <input type="email" id="email" name="email" class="form-control form-control-lg shadow" placeholder="email"><br>
+        <input type="email" id="email" name="email" class="form-control form-control-lg shadow-sm" placeholder="email"><br>
 
-        <input type="password" id="password" name="password" class="form-control form-control-lg shadow"
+        <input type="password" id="password" name="password" class="form-control form-control-lg shadow-sm"
                placeholder="password"><br>
 
-        <select id="role" name="role" class="form-select form-control-lg shadow">
+        <select id="role" name="role" class="form-select form-control-lg shadow-sm">
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
         </select><br>
 
         <input type="submit" value="Sign up" class="btn rounded-pill px-5 py-2 btn-color mt-2 fs-5">
     </form>
-    <a class="fs-5" href="{% url 'login_view' %}">Already have an account?</a>
+    <a class="fs-5" href="{% url 'login' %}">Already have an account?</a>
 </div>
 {% bootstrap_javascript %}
+{% if error %}
+    <script>
+    function showAlert() {
+        var errorMessage = "{{ error }}";
+        alert(errorMessage);
+    }
+    window.onload = showAlert;
+    </script>
+{% endif %}
 </body>
 </html>

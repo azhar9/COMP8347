@@ -25,13 +25,18 @@ a {
     color: white;
 }
 
+.btn-color-unpublish {
+    background: #000000 !important;
+    color: white;
+}
+
 .btn-color-secondary {
     background: #898A86;
     color: white;
 }
 
 .btn-color-success {
-    background: #5DA600;
+    background: rgba(93, 166, 0, 0.68);
     color: white;
  }
 
