@@ -483,9 +483,8 @@ class CourseNavigationView(View):
     def get(self, request, courseid, coursecontentid=None):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
-        course_content = get_object_or_404(CourseContent, id=coursecontentid)
-        print(user_profile.role.name == 'teacher')
         if user_profile.role.name == 'teacher':
+            course_content = get_object_or_404(CourseContent, id=coursecontentid)
             # get the current section, its data and return
             contents = {
                 course_content.section.name: [
@@ -501,11 +500,21 @@ class CourseNavigationView(View):
             }
             return render(request, 'course_navigation.html', context)
 
-        section_list = course.section_set.all().order_by('order')
+        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
+        section_list = list(course.section_set.all().order_by('order'))
         # Get all the course contents related to the sections
         contents = OrderedDict()
         for sect in section_list:
             contents[sect.name] = list(sect.coursecontent_set.all())
+            content_list = []
+            for content in sect.coursecontent_set.all():
+                try:
+                    course_progress = CourseProgress.objects.get(course_content=content, enrollment=enrollment)
+                    content.is_completed = course_progress.status
+                except:
+                    content.is_completed = False
+                content_list.append(content)
+            contents[sect.name] = content_list
 
         # if contentid is not specified, then redirect to the first content in first section
         if coursecontentid is None:
@@ -515,7 +524,6 @@ class CourseNavigationView(View):
             return redirect('course_navigation_content', courseid=courseid, coursecontentid=content.id)
 
         coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
-        enrollment = Enrollment.objects.get(student_id=request.user.id, course_id=courseid)
 
         course_progress_count = CourseProgress.objects.filter(enrollment=enrollment, status=True).count()
         course_contents_count = CourseContent.objects.filter(section__course_id=enrollment.course.id).count()

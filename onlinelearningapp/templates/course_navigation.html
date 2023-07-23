@@ -52,7 +52,7 @@ Course Navigator
                         <div class="p-2">
                             <a href="{% url 'course_navigation_content' courseid=course.id coursecontentid=content.id %}"
                                class="d-flex flex-row align-items-center justify-content-between">
-                                {{ content.name }}
+                                {{ content.name }} {{ content.is_completed }}
                                 <img src="{% static 'images/RightArrow.png' %}" class="right-arrow">
                             </a>
                         </div>
