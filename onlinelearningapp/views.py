@@ -149,7 +149,7 @@ class RegisterView(View):
         UserProfile.objects.create(user=user, role=role_obj)
         return redirect('home')  # Redirect to the home page after successful registration
 
-        return render(request, 'register.html')
+        return render(request, 'register.html', context=context)
 
 
 def login_view(request):
