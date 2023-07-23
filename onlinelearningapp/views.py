@@ -559,7 +559,7 @@ class CourseContentFileView(View):
 
 class Payment(View):
     def get(self, request):
-        print('Insdie payment view')
+        print('Insdie payment view : GET')
         membership_selected = request.GET.get('membership_selected')
         user_profile = UserProfile.objects.get(user=request.user)
         existing_membership = user_profile.membership.name
@@ -570,7 +570,9 @@ class Payment(View):
             print("inside if condition ")
             user_profile.membership = Membership.objects.get(name=membership_selected)
             user_profile.save()
-            return redirect('profile')
+            response = redirect('profile')
+            response.set_cookie('membership_selected', membership_selected, max_age=60)
+            return response
         context = {
             'membership_selected': membership_selected,
             'existing_membership': existing_membership,
@@ -583,19 +585,20 @@ class Payment(View):
         return response
 
     def post(self, request):
+        print('Insdie payment view : POST')
         membership_name = request.COOKIES.get('membership_selected')
         print(f"existing_membership form cookie is : {membership_name}")
         if membership_name is None:
-            membership_name = request.GET.get('membership_selected')
-            print(f"membership selected  form GET is : {membership_name}")
-        # existing_membership = request.COOKIES.get('existing_membership')
-        user_profile = get_object_or_404(UserProfile, user=request.user)
-        existing_membership = user_profile.membership
-        print(f"existing_membership from dB is : {existing_membership}")
+            membership_name = request.POST.get('membership_selected')
+            print(f"existing_membership form POST is : {membership_name}")
 
-        user_profile.membership = Membership.objects.get(name=existing_membership.name)
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+
+        user_profile.membership = Membership.objects.get(name=membership_name)
         user_profile.save()
-        return redirect('profile')
+        response = redirect('profile')
+        response.set_cookie('membership_selected', membership_name, max_age=60)
+        return response
 
 
 def download_certificate(request, courseid):

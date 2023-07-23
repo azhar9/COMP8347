@@ -54,6 +54,7 @@ Payment
             <label for="cvv" class="fw-bold mt-3">Cvv:</label>
             <input type="input" id="cvv" name="cvv" required maxlength="4" width="1" minlength="3"
                    class="form-control">
+            <input type="hidden" name="membership_selected" value="{{ membership_selected }}">
         </div>
         <button type="submit" class="btn rounded-pill px-5 py-1 btn-color-success mt-3 fs-5">Make Payment</button>
     </form>
