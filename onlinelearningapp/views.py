@@ -25,7 +25,6 @@ from .models import Role, UserProfile, Course, Membership, Enrollment, Section, 
 from .certificate import PdfGen
 
 
-# TODO: use class based views
 class RegisterView(View):
     def get(self, request):
         return render(request, 'register.html')
@@ -168,7 +167,6 @@ def dropCourse(request):
     return redirect('home')
 
 
-# TODO: create different home page templates for both students and teacher
 class HomeView(View):
     def get(self, request):
         if not request.user.is_authenticated:
@@ -261,8 +259,6 @@ class CourseView(View):
 
         instructor = User.objects.get(id=instructor_id)
         membership_level_required = Membership.objects.get(name=membership)
-
-        # Create the course and associate it with the instructor
         course = Course.objects.create(
             name=name,
             description=description,
@@ -275,7 +271,6 @@ class CourseView(View):
 
 class CourseDetailView(View):
     def get(self, request, courseid):
-        # TODO: get an object here with section and their respective content
         course = get_object_or_404(Course, id=courseid)
 
         user_profile = UserProfile.objects.get(user_id=request.user.id)
@@ -414,7 +409,7 @@ class AddContentView(View):
             content_type=content_type,
         )
 
-        return redirect('section_detail', courseid=courseid, sectionid=sectionid, role=role)
+        return redirect('section_detail', courseid=courseid, sectionid=sectionid)
 
 
 class CourseNavigationView(View):
