@@ -5,7 +5,7 @@ Student Home
 {% endblock %}
 {% block content %}
 <div>
-    <h2 class="fs-4 fw-bold">Your Registered Courses</h2>
+    <h2 class="fs-5 fw-bold">Your Registered Courses</h2>
     <div class="registered_courses d-flex flex-row justify-content-start flex-wrap">
         {% for enrollment in enrollments %}
         {% include 'registered_course_tile.html' with enrollment=enrollment %}
@@ -13,7 +13,7 @@ Student Home
     </div>
 </div>
 <div>
-    <h2 class="fs-4 fw-bold">Bronze Courses</h2>
+    <h2 class="fs-5 fw-bold mt-3">Bronze Courses</h2>
     <div class="unregistered_courses d-flex flex-row justify-content-start flex-wrap">
         {% for course in bronze_courses %}
         {% include 'unregistered_course_tile.html' with course=course %}
@@ -21,7 +21,7 @@ Student Home
     </div>
 </div>
 <div>
-    <h2 class="fs-4 fw-bold">Silver Courses</h2>
+    <h2 class="fs-5 fw-bold mt-3">Silver Courses</h2>
     <div class="unregistered_courses d-flex flex-row justify-content-start flex-wrap">
         {% for course in silver_courses %}
         {% include 'unregistered_course_tile.html' with course=course %}
@@ -29,7 +29,7 @@ Student Home
     </div>
 </div>
 <div>
-    <h2 class="fs-4 fw-bold">Gold Courses</h2>
+    <h2 class="fs-5 fw-bold mt-3">Gold Courses</h2>
     <div class="unregistered_courses d-flex flex-row justify-content-start flex-wrap">
         {% for course in gold_courses %}
         {% include 'unregistered_course_tile.html' with course=course %}
