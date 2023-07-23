@@ -601,6 +601,7 @@ def download_certificate(request, courseid):
     user_profile = UserProfile.objects.get(user_id=request.user.id)
     certificate = Certificate.objects.filter(student_id=request.user.id, course_id=courseid).first()
     course = Course.objects.get(pk=courseid)
+    filepath = None
     if certificate:
         filepath = certificate.filepath
     pdf_file_path = os.path.join(settings.CERTIFICATE_PATH, str(filepath))
