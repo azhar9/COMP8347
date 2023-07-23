@@ -209,9 +209,9 @@ def enrollCourse(request):
     course_details = get_object_or_404(Course, id=course_id)
     print("Course details found")
     user_profile = UserProfile.objects.get(user_id=request.user.id)
-    print("Found the elememtns")
-    print("Course membershoip Type", course_details.membership_level_required)
-    print("User membershoip Type", user_profile.membership)
+    print("Found the elements")
+    print("Course membership Type", course_details.membership_level_required)
+    print("User membership Type", user_profile.membership)
     try:
         if course_details.membership_level_required.name != user_profile.membership.name:
             enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=course_id)
