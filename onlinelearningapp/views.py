@@ -214,7 +214,21 @@ def enrollCourse(request):
     print("User membership Type", user_profile.membership)
     try:
         if course_details.membership_level_required.name != user_profile.membership.name:
-            enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=course_id)
+            if user_profile.membership.name == 'bronze':
+                enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=course_id)
+            elif user_profile.membership.name == 'gold':
+                course_enrollment = Enrollment()
+                course_enrollment.course_id = course_id
+                course_enrollment.student_id = request.user.id
+                course_enrollment.save()
+            else:
+                if course_details.membership_level_required.name == 'gold':
+                    enrollments = Enrollment.objects.get(student_id=request.user.id, course_id=course_id)
+                else:
+                    course_enrollment = Enrollment()
+                    course_enrollment.course_id = course_id
+                    course_enrollment.student_id = request.user.id
+                    course_enrollment.save()
         else:
             # print("Enrollments found")
             course_enrollment = Enrollment()
