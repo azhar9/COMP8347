@@ -111,7 +111,7 @@ class PdfGen:
             '''
         html = html.replace("[Student Name]", studentName).replace("[Completion Date]", dateStr).replace(
             "[Instructor Name]", instructorName).replace(
-            "[courseName]", [courseName])
+            "[courseName]", courseName)
         try:
             pdfkit.from_string(html, pdfFilePath, options=PdfGen.options,
                                configuration=pdfkit.configuration(wkhtmltopdf=PdfGen.path_to_wkhtmltopdf))
