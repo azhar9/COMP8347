@@ -200,7 +200,7 @@ def forgot_password(request):
 
 
 def index(request):
-    return redirect('login_view')
+    return redirect('login')
 
 
 def enrollCourse(request):
@@ -261,7 +261,7 @@ def dropCourse(request):
 class HomeView(View):
     def get(self, request):
         if not request.user.is_authenticated:
-            return redirect('login_view')
+            return redirect('login')
 
         user_profile = UserProfile.objects.get(user=request.user)
         course_list = Course.objects.all()
