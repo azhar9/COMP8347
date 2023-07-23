@@ -24,7 +24,7 @@ Course Detail
             </div>
         </div>
         {% if not enrollments %}
-        <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Add"
+        <input type="button" onclick="location.href='/enrollCourse.do?courseId={{ course.id }}'" value="Subscribe"
                class="btn-color-primary btn rounded-pill px-5 py-2 me-3">
         {% else %}
         <input type="button" onclick="location.href='{% url 'course_navigation' courseid=course.id%}'" value="Continue"

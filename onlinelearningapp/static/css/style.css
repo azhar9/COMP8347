@@ -71,3 +71,7 @@ a {
 .text-color-black {
     color: black;
 }
+
+.fw-bold-sm {
+    font-weight: 600 !important;
+}
