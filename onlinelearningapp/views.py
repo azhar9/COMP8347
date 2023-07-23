@@ -3,7 +3,6 @@ import uuid
 from collections import OrderedDict
 from datetime import datetime, date
 
-
 import pdfkit
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -390,12 +389,21 @@ class CourseDetailView(View):
         except Enrollment.DoesNotExist:
             enrollments = None
         sections = Section.objects.filter(course=course)
+        section_ids = [section.id for section in sections]
+        contentExists = False
+        # print(f"my content is :{CourseContent.objects.filter(section__in=section_ids)}")
+        try:
+            if len(CourseContent.objects.filter(section__in=section_ids)) > 0:
+                contentExists = True
+        except:
+            pass
         context = {
             'course': course,
             'sections': sections,
             'user_profile': user_profile,
             'enrollments': enrollments,
-            'courseEnrollements': courseEnrollmentsCounter
+            'courseEnrollements': courseEnrollmentsCounter,
+            'contentExists': contentExists
         }
         print(context)
         return render(request, 'course_detail.html', context)
