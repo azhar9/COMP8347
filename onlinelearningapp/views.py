@@ -349,41 +349,6 @@ class AddSectionView(View):
 
 
 @method_decorator(login_required, name="dispatch")
-class SectionView(View):
-    def get(self, request, courseid, sectionid):
-        print('hi', courseid, sectionid)
-        user_profile = UserProfile.objects.get(user_id=request.user.id)
-        course = get_object_or_404(Course, id=courseid)
-        section = get_object_or_404(Section, id=sectionid)
-        contents = CourseContent.objects.filter(section=section)
-        context = {
-            'section': section,
-            'course': course,
-            'contents': contents,
-            'role': user_profile.role.name,
-            'user_profile': user_profile
-
-        }
-        return render(request, 'section_detail.html', context)
-
-
-@method_decorator(login_required, name="dispatch")
-class CourseContentView(View):
-    def get(self, request, courseid, sectionid, coursecontentid):
-        user_profile = UserProfile.objects.get(user_id=request.user.id)
-        section = get_object_or_404(Section, id=sectionid)
-        course = get_object_or_404(Course, id=courseid)
-        coursecontent = get_object_or_404(CourseContent, id=coursecontentid)
-        context = {
-            'section': section,
-            'course': course,
-            'coursecontent': coursecontent,
-            'user_profile': user_profile,
-        }
-        return render(request, 'section_detail.html', context)
-
-
-@method_decorator(login_required, name="dispatch")
 class AddContentView(View):
     def get(self, request, courseid, sectionid):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
@@ -416,7 +381,7 @@ class AddContentView(View):
             content_type=content_type,
         )
 
-        return redirect('section_detail', courseid=courseid, sectionid=sectionid)
+        return redirect('course_navigation', courseid=courseid)
 
 @method_decorator(login_required, name="dispatch")
 class CourseNavigationView(View):
@@ -424,13 +389,20 @@ class CourseNavigationView(View):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
         course = get_object_or_404(Course, id=courseid)
         if user_profile.role.name == 'teacher':
+            # contents = course_content.section.coursecontent_set.all()
+            
+            section_list = list(course.section_set.all().order_by('order'))
+            contents = OrderedDict()
+            for sect in section_list:
+                contents[sect.name] = list(sect.coursecontent_set.all())
+
+            if coursecontentid is None:
+                section = next(iter(contents.values()))
+                content = section[0]
+                return redirect('course_navigation_content', courseid=courseid, coursecontentid=content.id)
+            
             course_content = get_object_or_404(CourseContent, id=coursecontentid)
-            # get the current section, its data and return
-            contents = {
-                course_content.section.name: [
-                    course_content
-                ]
-            }
+
             context = {
                 'user_profile': user_profile,
                 'contents': contents,
@@ -445,7 +417,6 @@ class CourseNavigationView(View):
         # Get all the course contents related to the sections
         contents = OrderedDict()
         for sect in section_list:
-            contents[sect.name] = list(sect.coursecontent_set.all())
             content_list = []
             for content in sect.coursecontent_set.all():
                 try:

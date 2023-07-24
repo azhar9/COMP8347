@@ -19,7 +19,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import path
 
 from onlinelearningapp.views import RegisterView, HomeView, login_view, forgot_password, index, CourseView, \
-    CourseDetailView, SectionView, AddSectionView, AddContentView, ProfileView, enrollCourse, CourseNavigationView, \
+    CourseDetailView, AddSectionView, AddContentView, ProfileView, enrollCourse, CourseNavigationView, \
     dropCourse, CourseContentFileView, ChangeMembership, Payment, download_certificate
 
 urlpatterns = [
@@ -44,7 +44,6 @@ urlpatterns = [
     path('enrollCourse.do', enrollCourse, name='enrollCourse'),
     path('dropCourse.do', dropCourse, name='dropCourse'),
     path('courses/<int:courseid>/add-section/', AddSectionView.as_view(), name='add_section'),
-    path('courses/<int:courseid>/<int:sectionid>', SectionView.as_view(), name='section_detail'),
     path('courses/<int:courseid>/<int:sectionid>/add-content/', AddContentView.as_view(), name='add_content'),
     path('courses/<int:courseid>/<int:sectionid>/<int:coursecontentid>', AddContentView.as_view(), name='add_content'),
     path('course_navigation/<int:courseid>/<int:coursecontentid>/', CourseNavigationView.as_view(),

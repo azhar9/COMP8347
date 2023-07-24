@@ -10,7 +10,7 @@ Add Course Content
     <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
     <a href="{% url 'course_detail' course.id %}" class="fs-2">{{ course.name }}</a> <span
         class="fs-2 mx-2">></span>
-    <a href="{% url 'section_detail' courseid=course.id sectionid=section.id %}" class="fs-2">{{ section.name }}</a> <span
+    <a href="{% url 'course_navigation' courseid=course.id %}" class="fs-2">{{ section.name }}</a> <span
         class="fs-2 mx-2">></span>
     <span class="fs-2 fw-bold">New Content</span>
 </div>

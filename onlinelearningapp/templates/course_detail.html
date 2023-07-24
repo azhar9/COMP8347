@@ -60,7 +60,7 @@ Course Detail
 
             <div>
                 {% for section in sections %}
-                <a href="{% url 'section_detail' courseid=course.id sectionid=section.id %}"
+                <a href="{% url 'course_navigation' courseid=course.id %}"
                    class="border-bottom py-2 px-4 d-flex flex-row align-items-center justify-content-between">
                     {{ section.name }}
                     <img src="{% static 'images/RightArrow.png' %}" class="right-arrow">
