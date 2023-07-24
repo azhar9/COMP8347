@@ -9,6 +9,11 @@ Student Home
     <div class="registered_courses d-flex flex-row justify-content-start flex-wrap">
         {% for enrollment in enrollments %}
         {% include 'registered_course_tile.html' with enrollment=enrollment %}
+        {% empty %}
+        <div class="fw-4 background-white py-2 px-3 rounded">
+            You haven't enrolled in any courses yet. To do so, please select one of the courses listed below for
+            registration.
+        </div>
         {% endfor %}
     </div>
 </div>

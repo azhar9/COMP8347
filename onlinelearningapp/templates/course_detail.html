@@ -38,7 +38,7 @@ Course Detail
     <div>
         {% if user_profile.role.name == 'teacher' %}
         <div class="d-flex flex-row align-items-center">
-            <a href="{% url 'home'%}" class="fs-2">Courses</a> <span class="fs-2 mx-2">></span>
+            <a href="{% url 'home'%}" class="fs-3">Courses</a> <span class="fs-3 mx-2">></span>
             <span class="fs-2 fw-bold">{{ course.name }}</span>
         </div>
         <div class="background-white p-4 rounded-4 shadow mt-4">
