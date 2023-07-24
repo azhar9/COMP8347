@@ -58,6 +58,15 @@ The Online Learning Platform comes with a variety of features, including but not
 - Intuitive dashboard for instructors and students
 - Forget password functionality with email support
 - Secure authentication and data protection
+- Course Builder
+- Membership Option
+- Payment Gateway
+- Student Management System
+- Database saved in JSON format.
+- Class-based views
+- Bootstrap for styling
+- Login, logout, and forgot password features.
+- Other relevant
 
 ## Contribution
 
