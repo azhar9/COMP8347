@@ -68,6 +68,15 @@ a {
     height: 10px;
 }
 
+.tick {
+    width: 10px;
+    height: 10px;
+}
+
 .text-color-black {
     color: black;
+}
+
+.fw-bold-sm {
+    font-weight: 600 !important;
 }
