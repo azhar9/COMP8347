@@ -2,7 +2,8 @@ import os
 import uuid
 from collections import OrderedDict
 from datetime import datetime, date
-
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 import pdfkit
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
@@ -111,7 +112,7 @@ def forgot_password(request):
 def index(request):
     return redirect('login')
 
-
+@login_required
 def enrollCourse(request):
     course_id = request.GET['courseId']
 
@@ -156,7 +157,7 @@ def enrollCourse(request):
         }
         return render(request, 'payment.html', context)
 
-
+@login_required
 def dropCourse(request):
     course_id = request.GET.get('courseId')
     student_id = request.user.id
@@ -167,10 +168,9 @@ def dropCourse(request):
     return redirect('home')
 
 
+@method_decorator(login_required, name="dispatch")
 class HomeView(View):
     def get(self, request):
-        if not request.user.is_authenticated:
-            return redirect('login')
 
         user_profile = UserProfile.objects.get(user=request.user)
         course_list = Course.objects.filter(published=True)
@@ -211,7 +211,7 @@ class HomeView(View):
             }
             return render(request, 'home_student.html', context)
 
-
+@method_decorator(login_required, name="dispatch")
 class ProfileView(View):
     def get(self, request):
         user_profile = UserProfile.objects.get(user=request.user)
@@ -221,6 +221,7 @@ class ProfileView(View):
         return render(request, 'profile.html', context)
 
 
+@method_decorator(login_required, name="dispatch")
 class ChangeMembership(View):
     def get(self, request):
         user_profile = UserProfile.objects.get(user=request.user)
@@ -228,7 +229,7 @@ class ChangeMembership(View):
             'user_profile': user_profile,
         }
         return render(request, 'change_membership.html', context)
-
+    
     def post(self, request):
         membership_name = request.POST.get('membership')
         user_profile = get_object_or_404(UserProfile, user=request.user)
@@ -237,6 +238,7 @@ class ChangeMembership(View):
         return redirect('profile')
 
 
+@method_decorator(login_required, name="dispatch")
 class CourseView(View):
     template_name = 'course_builder.html'
 
@@ -269,6 +271,7 @@ class CourseView(View):
         return redirect('home')
 
 
+@method_decorator(login_required, name="dispatch")
 class CourseDetailView(View):
     def get(self, request, courseid):
         course = get_object_or_404(Course, id=courseid)
@@ -315,6 +318,7 @@ class CourseDetailView(View):
         return redirect('course_detail', courseid=courseid)
 
 
+@method_decorator(login_required, name="dispatch")
 class AddSectionView(View):
     def get(self, request, courseid):
         course = get_object_or_404(Course, id=courseid)
@@ -344,6 +348,7 @@ class AddSectionView(View):
         return redirect('course_detail', courseid=courseid)
 
 
+@method_decorator(login_required, name="dispatch")
 class SectionView(View):
     def get(self, request, courseid, sectionid):
         print('hi', courseid, sectionid)
@@ -362,6 +367,7 @@ class SectionView(View):
         return render(request, 'section_detail.html', context)
 
 
+@method_decorator(login_required, name="dispatch")
 class CourseContentView(View):
     def get(self, request, courseid, sectionid, coursecontentid):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
@@ -377,6 +383,7 @@ class CourseContentView(View):
         return render(request, 'section_detail.html', context)
 
 
+@method_decorator(login_required, name="dispatch")
 class AddContentView(View):
     def get(self, request, courseid, sectionid):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
@@ -411,7 +418,7 @@ class AddContentView(View):
 
         return redirect('section_detail', courseid=courseid, sectionid=sectionid)
 
-
+@method_decorator(login_required, name="dispatch")
 class CourseNavigationView(View):
     def get(self, request, courseid, coursecontentid=None):
         user_profile = UserProfile.objects.get(user_id=request.user.id)
@@ -492,6 +499,7 @@ class CourseNavigationView(View):
         return redirect('course_navigation_content', courseid=courseid, coursecontentid=coursecontentid)
 
 
+@method_decorator(login_required, name="dispatch")
 class CourseContentFileView(View):
     def get(self, request, coursecontentid):
         # Get the PDF file path based on the provided ID
@@ -512,6 +520,7 @@ class CourseContentFileView(View):
             return HttpResponse("PDF file not found", status=404)
 
 
+@method_decorator(login_required, name="dispatch")
 class Payment(View):
     def get(self, request):
         print('Insdie payment view : GET')
@@ -556,6 +565,7 @@ class Payment(View):
         return response
 
 
+@login_required
 def download_certificate(request, courseid):
     user_profile = UserProfile.objects.get(user_id=request.user.id)
     certificate = Certificate.objects.filter(student_id=request.user.id, course_id=courseid).first()
